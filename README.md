@@ -1,7 +1,7 @@
 # "Cyphr.me" is a trademark of Cypherpunk, LLC. The Cyphr.me logo is all rights reserved Cypherpunk, LLC and may not be used without permission.
 # Cyphr.me Ed25519 Applet
 
-See live demo here: https://cyphr.me/ed
+See live demo here: https://cyphr.me/ed25519_applet/ed.html
 
 ## The applet is used as a signing and verification tool for ed25519.
 
