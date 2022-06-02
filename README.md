@@ -1,3 +1,4 @@
+# "Cyphr.me" is a trademark of Cypherpunk, LLC. The Cyphr.me logo is all rights reserved Cypherpunk, LLC and may not be used without permission.
 # Cyphr.me Ed25519 Applet
 
 See live demo here: https://cyphr.me/ed
@@ -27,3 +28,8 @@ https://ianix.com/pub/ed25519-deployment.html
 
 
 Implemented using noble/ed25519: https://github.com/paulmillr/noble-ed25519
+
+# Development
+
+When making changes to the JavaScript, be sure to rebuild the min file.
+See join.js for more notes.

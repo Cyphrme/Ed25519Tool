@@ -42,16 +42,17 @@ async function GenRadomKeyPairGUI() {
 
 // Generates an ed25519 public private key pair. Both outputs in the GUI will be
 // set, as well as setting the Input key pair (In the selected encoding).
+// If no seed is set, checks if private key is already set, and if set, sets
+// the GUIs public private key pair values.
 async function KeyFromSeedGUI() {
 	let seed = document.getElementById('Seed').value;
 	if (isEmpty(seed)) {
 		console.debug('Seed is empty... seeing if private key is already set.');
 		let pk = await getPrivateKeyBytes();
-		console.debug(pk)
 		if (pk === null) {
 			return;
 		}
-
+		setKeyPairGUIFromHex(await ArrayBufferToHex(pk));
 		return;
 	}
 	await setSeedGUI(seed);

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ed25519</title>
+
+	<script src="ed.min.js"></script>
+
+	<style>
+		.grid-container {
+			display: grid;
+			grid-template-columns: 110px auto;
+			row-gap: 10px;
+		}
+	</style>
+
+</head>
+
+<body>
+	<h1>Cyphr.me's Ed25519 Applet</h1>
+
+	<section id="Input">
+		<h1>In (Sign or Verify)</h1>
+		<hr>
+
+		<label for="MsgOpts">Message: </label>
+		<select name="MsgOpts" id="MsgOpts">
+			<option value="Hex">Hex</option>
+			<option value="B64">Base64</option>
+			<option value="Text">Text</option>
+		</select><br>
+
+		<textarea name="InputMsg" id="InputMsg" cols="50" rows="3"></textarea><br>
+		<button id="SignBtn">Sign</button>
+		<button title="Verify current signature, message, and public key." id="VerifyBtn">Verify</button>
+		<span id="ValidSignature"></span>
+
+		<br><br>
+
+		<div class="grid-container">
+			<label for="KeyOpts">Key: </label>
+			<div>
+				<select name="KeyOpts" id="KeyOpts">
+					<option value="Hex">Hex</option>
+					<option value="B64">Base64</option>
+				</select>
+				<button class="item-3" id="GenRandKeyPairBtn">Gen Random</button>
+				<button class="item-4" id="GenKeyPairBtn">Gen from Seed/Prk</button>
+			</div>
+			<label for="Seed">Seed: </label>
+			<div>
+				<input type="text" id="Seed" size="50">
+			</div>
+			<label for="PrivateKey">Private Key: </label>
+			<div>
+				<input type="text" id="PrivateKey" size="75">
+			</div>
+			<label for="PublicKey">Public Key: </label>
+			<div>
+				<input type="text" id="PublicKey" size="75">
+			</div>
+			<label for="Signature">Signature: </label>
+			<div>
+				<input type="text" id="Signature" size="100">
+			</div>
+		</div>
+
+	</section>
+
+	<br>
+
+	<section id="Output">
+		<h1>Out</h1>
+		<hr>
+
+		<div id="Base64">
+			<h3>Base64</h3>
+			<div class="grid-container">
+				<label for="B64Seed">Seed: </label>
+				<span id="B64Seed"></span>
+				<label for="B64PriKey">Private Key: </label>
+				<span id="B64PriKey"></span>
+				<label for="B64PubKey">Public Key: </label>
+				<span id="B64PubKey"></span>
+				<label for="B64Sig">Signature: </label>
+				<span id="B64Sig"></span>
+			</div>
+		</div>
+
+		<div id="Hex">
+			<h3>Hex</h3>
+			<div class="grid-container">
+				<label for="HexSeed">Seed: </label>
+				<span id="HexSeed"></span>
+				<label for="HexPriKey">Private Key: </label>
+				<span id="HexPriKey"></span>
+				<label for="HexPubKey">Public Key: </label>
+				<span id="HexPubKey"></span>
+				<label for="HexSig">Signature: </label>
+				<span id="HexSig"></span>
+			</div>
+		</div>
+	</section>
+
+	<br><br><br><br>
+
+	<footer>
+		<div>
+			<p>The live applet: <a
+					href="https://cyphr.me/ed25519_applet/ed.html">https://cyphr.me/ed25519_applet/ed.html</a></p>
+			<p>The code: <a
+					href="https://github.com/cyphrme/ed25519_applet">https://github.com/cyphrme/ed25519_applet</a></p>
+			<p>Implemented with the <a href="https://github.com/paulmillr/noble-ed25519">noble/ed25519 library.</a>
+			</p>
+		</div>
+	</footer>
+
+</body>
+
+</html>
