@@ -1,6 +1,6 @@
 # Cyphr.me Ed25519 Applet
 
-See live demo here: https://cyphr.me/ed
+See live demo here: https://cyphr.me/ed25519_applet
 
 ## The applet is used as a signing and verification tool for ed25519.
 
