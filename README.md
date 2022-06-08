@@ -2,6 +2,13 @@
 
 Live demo: https://cyphr.me/ed25519_applet/ed.html
 
+## This tool can be run locally
+In your web browser, use `file://` to load `ed.html`
+
+```
+file:///pathtodirectoy/ed.html
+```
+
 ## Signing and verification tool for Ed25519
 
 
@@ -15,15 +22,16 @@ Supported formats:
 Messages: Base64, Hex, and Text (Bytes).
 Keys:     Base64 and Hex.
 
-# Terminology
-See "Naming Differences in Implementations" on the page.  This packages's
 
-- "seed" is the RFC's "private key"
-- "Public key" is the RFC's "public key"
 
+# Naming Differences in Implementations
+Many libraries, including this tool, refer to what the RFC calls "private key" as the "seed" (like Go). The 32 byte seed is used to generate the private component, the public key, and the "prefix".
+What some libraries call the "private key" (64 bytes) is the seed (32 bytes) concatenated with the public key (32 bytes). (Caching the public key precludes relatively slow regeneration when signing.)
+The "actual" private component ("secret scalar s" as named by the RFC (Section 5.1.5.3)) is typically regenerated from seed on signing. The public component is computed from "secret scalar s", but the "prefix" (nounce) is generated from seed and is used for signing and is also typically regenerated on signing.
+NaCL used to return the the private key as the "secret scalar s" with the "prefix". Instead of doing that most libraries simply regenerate both secret scalar s and prefix from seed, and optionally cache the public key.
 
 # TODO
-## Ed25519ph
+#### Ed25519ph
 https://github.com/paulmillr/noble-ed25519/issues/63
 
 Paul's Noble library currently only supports "PureEdDSA" and does not support
@@ -31,7 +39,7 @@ Ed25519ph ("pre-hashed").  We are waiting for it to be supported before we can
 implement it. 
 
 
-## Generate from seed "secret scalar s" and permit input from `sss || prefix`
+#### Generate from seed "secret scalar s" and permit input from `sss || prefix`
 It would be nice to output `"secret scalar s" || "prefix"` and accept it as
 input as well.  See https://github.com/paulmillr/noble-ed25519/issues/64.  It
 would require additional code to Noble since sss || prefix is not a possible

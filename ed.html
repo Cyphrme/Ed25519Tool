@@ -143,25 +143,6 @@
 			<p> <a href="https://cyphr.me/ed25519_applet/ed.html">Live Demo (this page)</a></p>
 			<p><a href="https://github.com/cyphrme/ed25519_applet">Source code on Github</a></p>
 			<br>
-			<h3> Naming Differences in Implementations </h3>
-			<p>
-				Many libraries, including this tool, refer to what the RFC calls "private key" as the "seed" (like <a href="https://pkg.go.dev/crypto/ed25519">Go</a>).
-				The 32 byte seed is used to generate the private component, the public key, and the "prefix".
-				<br>
-				What some libraries call the "private key" (64 bytes) is the seed (32 bytes) concatenated with the public key (32 bytes).
-				(Caching the public key precludes relatively slow regeneration when signing.)
-				<br>
-
-				The <a href="https://github.com/paulmillr/noble-ed25519/blob/ffdc7026d70297754a825f6e991426188891d1de/index.ts#L903">"actual" private</a>
-				component (<a href="https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5">"secret scalar s" as named by the RFC (Section 5.1.5.3)</a>)
-				is typically regenerated from seed on signing. The public component is computed from "secret scalar s", but the "prefix" (nounce) is generated
-				from seed and is used for signing and is also typically regenerated on signing.
-
-				<br>
-				NaCL used to return the the private key as the "secret scalar s" with the "prefix". Instead of doing that most libraries simply regenerate
-				both secret scalar s and prefix from seed, and optionally cache the public key.
-			</p>
-
 
 			<h4> See also </h4>
 			<p> <a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a> </p>
