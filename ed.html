@@ -1,118 +1,186 @@
 <!DOCTYPE html>
-<html lang="en" class="h-100">
+<html lang="en">
 
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>ed25519</title>
 
-	<script src="ed.min.js"></script>
+	<!-- For distribution, use single, minified JS file -->
+	<!-- <script src="ed.min.js"></script> -->
+
+	<!-- For distribution, use single, minified JS file -->
+	<!-- <script src="ed.min.js"></script> -->
+
+	<!-- For module developement, use line: -->
+	<script type="module" src="app.js"></script>
 
 	<style>
+		* {
+			font-family: 'Ubuntu Mono', monospace;
+		}
+
 		.grid-container {
 			display: grid;
-			grid-template-columns: 110px auto;
+			grid-template-columns: 130px auto;
 			row-gap: 10px;
+			align-items: center;
+		}
+
+
+		select,
+		button {
+			font-size: 100%;
+		}
+
+		#ValidSignature {
+			font-weight: bold;
+			font-size: 150%;
 		}
 	</style>
 
 </head>
 
 <body>
-	<h1>Cyphr.me's Ed25519 Applet</h1>
+	<h1>Ed25519 Sign or Verify</h1>
+	<h2>In</h2>
+	<hr>
 
-	<section id="Input">
-		<h1>In (Sign or Verify)</h1>
-		<hr>
 
-		<label for="MsgOpts">Message: </label>
-		<select name="MsgOpts" id="MsgOpts">
-			<option value="Hex">Hex</option>
-			<option value="B64">Base64</option>
-			<option value="Text">Text</option>
-		</select><br>
+	<div class="grid-container">
 
-		<textarea name="InputMsg" id="InputMsg" cols="50" rows="3"></textarea><br>
-		<button id="SignBtn">Sign</button>
-		<button title="Verify current signature, message, and public key." id="VerifyBtn">Verify</button>
-		<span id="ValidSignature"></span>
-
-		<br><br>
-
-		<div class="grid-container">
-			<label for="KeyOpts">Key: </label>
-			<div>
-				<select name="KeyOpts" id="KeyOpts">
+		<label for="InputMsg">
+			✉️ Message:
+		</label>
+		<div>
+			<textarea name="InputMsg" id="InputMsg" cols="50" rows="3"></textarea>
+			<br>
+			<label for="InputMsg">
+				<select name="MsgEncoding" id="MsgEncoding">
+					<option value="Text">Text (UTF-8)</option>
 					<option value="Hex">Hex</option>
-					<option value="B64">Base64</option>
+					<option value="B64">base64</option>
 				</select>
-				<button class="item-3" id="GenRandKeyPairBtn">Gen Random</button>
-				<button class="item-4" id="GenKeyPairBtn">Gen from Seed/Prk</button>
-			</div>
-			<label for="Seed">Seed: </label>
-			<div>
-				<input type="text" id="Seed" size="50">
-			</div>
-			<label for="PrivateKey">Private Key: </label>
-			<div>
-				<input type="text" id="PrivateKey" size="75">
-			</div>
-			<label for="PublicKey">Public Key: </label>
-			<div>
-				<input type="text" id="PublicKey" size="75">
-			</div>
-			<label for="Signature">Signature: </label>
-			<div>
-				<input type="text" id="Signature" size="100">
-			</div>
+
+				<select name="EdType" id="EdType">
+					<option value="Msg">Message ("pure")</option>
+					<option value="Dig">Digest ("ph")</option>
+				</select>
+			</label>
 		</div>
 
-	</section>
+		<p></p>
+		<div>
+			<button id="SignBtn">🔏 Sign</button>
+			<button title="Verify current signature, message, and public key." id="VerifyBtn">✅ Verify</button>
+			<span id="ValidSignature"></span>
+		</div>
+	</div>
+
+
+	<br><br>
+
+	<div class="grid-container">
+		<label for="KeyOpts"></label>
+		<div>
+			<select name="KeyOpts" id="KeyOpts">
+				<option value="Hex">Hex</option>
+				<option value="B64">base64</option>
+			</select>
+			<button class="item-3" id="GenRandKeyPairBtn">🎲 Gen Random</button>
+			<button class="item-4" id="GenKeyPairBtn">🌱 Gen from Seed</button>
+		</div>
+		<label for="Seed">🌱 Seed (Private Key): </label>
+		<div>
+			<input type="text" id="Seed" size="64">
+		</div>
+		<label for="PublicKey">🔑 Public Key: </label>
+		<div>
+			<input type="text" id="PublicKey" size="64">
+		</div>
+		<label for="Signature">✍️ Signature: </label>
+		<div>
+			<input type="text" id="Signature" size="128">
+		</div>
+	</div>
+
+
 
 	<br>
 
-	<section id="Output">
-		<h1>Out</h1>
-		<hr>
 
-		<div id="Base64">
-			<h3>Base64</h3>
-			<div class="grid-container">
-				<label for="B64Seed">Seed: </label>
-				<span id="B64Seed"></span>
-				<label for="B64PriKey">Private Key: </label>
-				<span id="B64PriKey"></span>
-				<label for="B64PubKey">Public Key: </label>
-				<span id="B64PubKey"></span>
-				<label for="B64Sig">Signature: </label>
-				<span id="B64Sig"></span>
-			</div>
-		</div>
+	<h2>Out</h2>
+	<hr>
 
-		<div id="Hex">
-			<h3>Hex</h3>
-			<div class="grid-container">
-				<label for="HexSeed">Seed: </label>
-				<span id="HexSeed"></span>
-				<label for="HexPriKey">Private Key: </label>
-				<span id="HexPriKey"></span>
-				<label for="HexPubKey">Public Key: </label>
-				<span id="HexPubKey"></span>
-				<label for="HexSig">Signature: </label>
-				<span id="HexSig"></span>
-			</div>
+
+
+	<div id="Hex">
+		<h3>Hex</h3>
+		<div class="grid-container">
+			<label for="SedHex">Seed: </label>
+			<span id="SedHex"></span>
+			<label for="PukHex">Public Key: </label>
+			<span id="PukHex"></span>
+			<label for="KypHex">Seed || Public: </label>
+			<span id="KypHex"></span>
+			<label for="OSigHex">Signature: </label>
+			<span id="OSigHex"></span>
 		</div>
-	</section>
+	</div>
+
+
+	<div id="Base64">
+		<h3>base64</h3>
+		<div class="grid-container">
+			<label for="Sed64">Seed: </label>
+			<span id="Sed64"></span>
+			<label for="Puk64">Public Key: </label>
+			<span id="Puk64"></span>
+			<label for="KypB64">Seed || Public: </label>
+			<span id="Kyp64"></span>
+			<label for="OSig64">Signature: </label>
+			<span id="OSig64"></span>
+		</div>
+	</div>
 
 	<br><br><br><br>
 
 	<footer>
+		<hr>
 		<div>
-			<p>The live applet: <a
-					href="https://cyphr.me/ed25519_applet/ed.html">https://cyphr.me/ed25519_applet/ed.html</a></p>
-			<p>The code: <a
-					href="https://github.com/cyphrme/ed25519_applet">https://github.com/cyphrme/ed25519_applet</a></p>
-			<p>Implemented with the <a href="https://github.com/paulmillr/noble-ed25519">noble/ed25519 library.</a>
+			<p>
+				Input with `Message ("pure")` option uses PureEdDSA without pre-hashing the message. <br>
+				Input with `Digest ("ph")` is HashEdDSA (Ed25519ph) and expects input to be a pre-hashed (SHA-512) digest.
+			</p><br>
+
+			<hr>
+			<h3> Naming Differences in Implementations </h3>
+			<p>
+				Many libraries, including this tool, refer to what the RFC calls "private key" as the "seed" (like <a href="https://pkg.go.dev/crypto/ed25519">Go</a>).
+				The 32 byte seed is used to generate  the private component, the public key,  and the "prefix".
+				<br>
+				What some libraries call the "private key" (64 bytes) is the seed (32 bytes) concatenated with the public key (32 bytes).
+				(Caching the public key precludes relatively slow regeneration when signing.)
+				<br>
+
+				The <a href="https://github.com/paulmillr/noble-ed25519/blob/ffdc7026d70297754a825f6e991426188891d1de/index.ts#L903">"actual" private</a>
+				component (<a href="https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5">"secret scalar s" as named by the RFC (Section 5.1.5.3)</a>)
+				is typically regenerated from seed on signing. The public component is computed from "secret scalar s", but the "prefix" (nounce) is generated
+				from seed and is used for signing and is also typically regenerated on signing.
+
+				<br>
+				NaCL used to return the the private key as the "secret scalar s" with the "prefix". Instead of doing that most libraries simply regenerate 
+				both secret scalar s and prefix from seed, and optionally cache public key.
+			</p>
+
+			<h3> Links </h3>
+			<p> <a href="https://cyphr.me/ed25519_applet/ed.html">Link to this page.</a></p>
+			<p><a href="https://github.com/cyphrme/ed25519_applet">This page's code.</a></p>
+			<br>
+			<p> See also: </p>
+			<p> <a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a> </p>
+			<p> <a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </p>
+			<p><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a>
+				<p><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Blog on Ed25519</a></p>
 			</p>
 		</div>
 	</footer>

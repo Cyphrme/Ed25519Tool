@@ -1,289 +1,224 @@
 "use strict";
 
-import * as ed from './noble-ed25519.js';
-
-export {
-	GenRadomKeyPairGUI,
-	KeyFromSeedGUI,
-	SignMsgGUI,
-	VerifySigGUI,
-}
+import * as _ from './noble-ed25519.js';
 
 // GUI Element variables
-//
-// Key encoding formats (e.g. "Hex" or "B64")
+var InputMsg;
+var MsgEncoding;
+var EdType;
 var KeyOptsElem;
 
 // DOM load
 document.addEventListener('DOMContentLoaded', () => {
+	InputMsg = document.getElementById('InputMsg');
+	MsgEncoding = document.getElementById('MsgEncoding');
+	EdType = document.getElementById('EdType');
 	KeyOptsElem = document.getElementById('KeyOpts');
 
 	// Set event listeners for buttons.
-	document.getElementById('GenRandKeyPairBtn').addEventListener('click', GenRadomKeyPairGUI);
-	document.getElementById('GenKeyPairBtn').addEventListener('click', KeyFromSeedGUI);
-	document.getElementById('SignBtn').addEventListener('click', SignMsgGUI);
-	document.getElementById('VerifyBtn').addEventListener('click', VerifySigGUI);
+	document.getElementById('GenRandKeyPairBtn').addEventListener('click', GenRadomGUI);
+	document.getElementById('GenKeyPairBtn').addEventListener('click', KeyFromSeed);
+	document.getElementById('SignBtn').addEventListener('click', Sign);
+	document.getElementById('VerifyBtn').addEventListener('click', Verify);
 });
 
-// Generates a new public private key pair, and sets the seed, private key, and
-// public key for the GUI In and Out sections.
-async function GenRadomKeyPairGUI() {
-	let seed = crypto.getRandomValues(new Uint8Array(32));
-	let hex = await ArrayBufferToHex(seed);
+
+/**
+ * @typedef OutSig
+ * @type {object}
+ * 
+ * @property {Uint8}    bytes
+ * @property {Hex}      Hex
+ * @property {b64}      b64
+ */
+
+
+/**
+ * @typedef MSPPS
+ * @type {object}
+ * // Inputs
+ * @property {Uint8}    Msg -   Msg in bytes, UTF-8 if relevant.
+ * 
+ * @property {Hex}      SedHex - Seed Hex.
+ * @property {Hex}      PukHex - Public Key Hex.
+ * @property {Hex}      KypHex - (Key Pair) Seed || Public Key.  
+ * @property {Hex}      SigHex - Signature Hex.
+ * 
+ * @property {b64}      Sed64 -  Seed b64.
+ * @property {b64}      Puk64 -  Public Key b64.
+ * @property {b64}      Kyp64 -  (Key Pair) Seed || Public Key.  
+ * @property {b64}      Sig64 -  Signature b64.
+ * 
+ * @property {Uint8}    Sedb -   Seed bytes.
+ * @property {Uint8}    Pukb -   Public Key
+ * @property {Uint8}    Kypb -   (Key Pair) Seed || Public Key.  
+ * @property {Uint8}    Sigb -   Signature.
+ * 
+ * // Outputs.
+ * // The rest of the outs come directly from ins.  
+ * @property {Hex}      OSigHex - Out Signature Hex.
+ * @property {b64}      OSig64 -  Out Signature b64.
+ * 
+ */
+
+
+/**
+ * GetMSPPS gets from Gui and returns MSPPS
+ * 
+ * @returns  {MSPPS}        
+ */
+async function GetMSPPS() {
+	/** @type {MSPPS} */
+	let MSPPS = {};
+	let Msg = InputMsg.value;
+
+	switch (MsgEncoding.value) {
+		case "B64":
+			MSPPS.Msg = new Uint8Array(await HexToUI8(B64ToHex(Msg)));
+			break;
+		case "Hex":
+			MSPPS.Msg = new Uint8Array(await HexToUI8(Msg));
+			break;
+		case "Text":
+			let enc = new TextEncoder("utf-8"); // Suppose to be always in UTF-8.
+			MSPPS.Msg = new Uint8Array(enc.encode(Msg));
+			break;
+		default:
+			console.error('unsupported message encoding');
+			return null;
+	}
+
+	if (EdType.value === "Msg") {
+		// TODO, Support ph and pure
+	}
+
+	let Sed = document.getElementById('Seed').value;
+	let Puk = document.getElementById('PublicKey').value;
+	let Sig = document.getElementById('Signature').value;
+
 	if (KeyOptsElem.value === "Hex") {
-		seed = hex;
-	} else {
-		seed = await ArrayBufferTo64ut(seed);
+		MSPPS.SedHex = Sed;
+		MSPPS.PukHex = Puk;
+		MSPPS.KypHex = Sed + Puk;
+		MSPPS.SigHex = Sig;
 	}
-	// console.debug(seed)
-	await setSeedGUI(seed);
-	setKeyPairGUIFromHex(await HashHex("SHA-256", hex));
+
+	if (KeyOptsElem.value === "B64") {
+		MSPPS.SedHex = B64ToHex(Sed);
+		MSPPS.PukHex = B64ToHex(Puk);
+		MSPPS.KypHex = B64ToHex(Sed) + B64ToHex(Puk);
+		MSPPS.SigHex = B64ToHex(Sig);
+	}
+
+	await SetMSPPSFromHex(MSPPS);
+	return MSPPS;
 }
 
-// Generates an ed25519 public private key pair. Both outputs in the GUI will be
-// set, as well as setting the Input key pair (In the selected encoding).
-// If no seed is set, checks if private key is already set, and if set, sets
-// the GUIs public private key pair values.
-async function KeyFromSeedGUI() {
-	let seed = document.getElementById('Seed').value;
-	if (isEmpty(seed)) {
-		console.debug('Seed is empty... seeing if private key is already set.');
-		let pk = await getPrivateKeyBytes();
-		if (pk === null) {
-			return;
-		}
-		setKeyPairGUIFromHex(await ArrayBufferToHex(pk));
-		return;
-	}
-	await setSeedGUI(seed);
-	if (KeyOptsElem.value !== "Hex") {
-		seed = B64ToHex(seed);
-	}
-	setKeyPairGUIFromHex(await HashHex("SHA-256", seed));
+// Sets the byte and base64 values from the Hex values.  Sets in place (no
+// return).
+async function SetMSPPSFromHex(MSPPS) {
+	MSPPS.Sed64 = await HexTob64ut(MSPPS.SedHex);
+	MSPPS.Puk64 = await HexTob64ut(MSPPS.PukHex);
+	MSPPS.Kyp64 = await HexTob64ut(MSPPS.KypHex);
+	MSPPS.Sig64 = await HexTob64ut(MSPPS.SigHex);
+	MSPPS.Sedb = await HexToUI8(MSPPS.SedHex);
+	MSPPS.Pukb = await HexToUI8(MSPPS.PukHex);
+	MSPPS.Kypb = await HexToUI8(MSPPS.KypHex);
+	MSPPS.Sigb = await HexToUI8(MSPPS.SigHex);
 }
 
-// Signs the current input message, depending on selected encoding method.
-async function SignMsgGUI() {
-	let privateKeyBytes = await getPrivateKeyBytes();
-	let msgBytes = await getMessageBytes();
-	if (privateKeyBytes === null || msgBytes === null) {
-		// console.debug("private key or message is null.");
-		return;
-	}
-	// Sets both application and GUI signature values.
-	let bytes = await ed.sign(msgBytes, privateKeyBytes);
-	if (!ed25519SigLenCheck(bytes)) {
-		return;
-	}
-	let Hex = await ArrayBufferToHex(bytes);
-
-	// console.debug(Hex);
-	if (isEmpty(Hex) || Hex.length % 2 === 1) {
-		console.error('input is invalid Hex');
-		return;
+function SetGuiIn(MSPPS) {
+	if (KeyOptsElem.value === "Hex") {
+		document.getElementById('Seed').value = MSPPS.SedHex;
+		document.getElementById('PublicKey').value = MSPPS.PukHex;
 	}
 
-	document.getElementById("HexSig").textContent = Hex;
-	document.getElementById('B64Sig').textContent = await HexTob64ut(Hex);
-	setElemFromHex(document.getElementById('Signature'), Hex);
+	if (KeyOptsElem.value === "B64") {
+		document.getElementById('Seed').value = MSPPS.Sed64;
+		document.getElementById('PublicKey').value = MSPPS.Puk64;
+	}
+}
+
+async function SetGuiOut(MSPPS) {
+	document.getElementById('SedHex').textContent = MSPPS.SedHex;
+	document.getElementById('PukHex').textContent = MSPPS.PukHex;
+	document.getElementById('KypHex').textContent = MSPPS.KypHex;
+	document.getElementById('OSigHex').textContent = MSPPS.OSigHex;
+	document.getElementById('Sed64').textContent = MSPPS.Sed64;
+	document.getElementById('Puk64').textContent = MSPPS.Puk64;
+	document.getElementById('Kyp64').textContent = MSPPS.Kyp64;
+	document.getElementById('OSig64').textContent = MSPPS.OSig64;
+}
+
+
+// GenRadomGUI generates a random seed, private key, and public key. 
+async function GenRadomGUI() {
+	let MSPPS = {};
+	MSPPS.SedHex = await ArrayBufferToHex(await crypto.getRandomValues(new Uint8Array(32)));
+	await SetMSPPSFromHex(MSPPS);
+	KeyFromSeed(MSPPS);
+}
+
+/**
+ * KeyFromSeed gets from Gui and returns MSPPS
+ * 
+ * @param  {[MSPPS]} [MSPPS]    
+ */
+async function KeyFromSeed(MSPPS) {
+	if(isEmpty(MSPPS.SedHex)){
+		MSPPS = await GetMSPPS();
+	}
+
+	// Ed25519 uses the lower 32 bytes of SHA-512
+	// https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5
+	let k = await window.nobleEd25519.utils.getExtendedPublicKey(MSPPS.Sedb);
+	MSPPS.PukHex = k.point.toHex().toUpperCase();
+	MSPPS.KypHex = MSPPS.SedHex + MSPPS.PukHex;
+
+	await SetMSPPSFromHex(MSPPS);
+	SetGuiIn(MSPPS);
+	SetGuiOut(MSPPS);
+}
+
+
+// SignMsg Signs the current input message, depending on selected encoding method.
+async function Sign() {
+	let MSPPS = await GetMSPPS();
+
+	if (MSPPS.Sedb === undefined || MSPPS.Msg === undefined) {
+		console.debug("private key or message is empty.");
+		return;
+	}
+
+	MSPPS.OSigHex = await ArrayBufferToHex(await window.nobleEd25519.sign(MSPPS.Msg, MSPPS.Sedb));
+	if (MSPPS.OSigHex.length !== 128) {
+		console.error("Invalid Signature length");
+		return false;
+	}
+
+	MSPPS.OSig64 = await HexTob64ut(MSPPS.OSigHex);
+	SetGuiOut(MSPPS);
 }
 
 // Verifies the current signature with the current message and public key.
 // Populates the ValidSignature span with the fail/success message.
-async function VerifySigGUI() {
+async function Verify() {
+	let MSPPS = await GetMSPPS();
 	let valid = false;
-	let msg = "Invalid Signature";
-	let sig = document.getElementById('Signature').value;
-	let signatureBytes = await getSignatureBytes();
-	if (!isEmpty(sig) && ed25519SigLenCheck(signatureBytes)) {
-		try {
-			// console.debug(signatureBytes, await getMessageBytes(), await getPublicKeyBytes());
-			valid = await ed.verify(signatureBytes, await getMessageBytes(), await getPublicKeyBytes());
-		} catch (error) {
-			console.error(error);
-			valid = false;
-		} finally {
-			if (valid) {
-				msg = "Valid Signature";
-			}
-			// console.debug(valid);
-		}
+	let msg = "❌ Invalid Signature";
+	console.log(MSPPS);
+	try {
+		valid = await window.nobleEd25519.verify(MSPPS.Sigb, MSPPS.Msg, MSPPS.Pukb);
+	} catch (error) {
+		console.error(error);
+		valid = false;
 	}
+	if (valid) {
+		msg = "✅ Valid Signature";
+	}
+
 	document.getElementById('ValidSignature').textContent = msg;
 }
-
-
-///////////////////////////////////////////////
-//////////////////  Helpers  //////////////////
-///////////////////////////////////////////////
-
-// Sets the GUI In and Out sections' public private key pair values.
-async function setKeyPairGUIFromHex(Hex) {
-	let privB64 = await HexTob64ut(Hex);
-	let pubHex = await ArrayBufferToHex(await ed.getPublicKey(new Uint8Array(await HexToArrayBuffer(Hex))));
-	let pubB64 = await HexTob64ut(pubHex);
-	// Sets private key outputs
-	document.getElementById('HexPriKey').textContent = Hex;
-	document.getElementById('B64PriKey').textContent = privB64;
-	// Sets public key outputs.
-	document.getElementById('HexPubKey').textContent = pubHex;
-	document.getElementById('B64PubKey').textContent = pubB64;
-
-	// Sets key pair for inputs.
-	let priv;
-	let pub;
-	if (KeyOptsElem.value === "Hex") {
-		priv = Hex;
-		pub = pubHex;
-	} else {
-		priv = privB64;
-		pub = pubB64;
-	}
-	// Sets main public private key pair in the GUI In section.
-	document.getElementById('PublicKey').value = pub;
-	document.getElementById('PrivateKey').value = priv;
-}
-
-// Returns an UInt8Array of the current Private Key in the GUI.
-// If the private key is not populated, function errors and returns null.
-async function getPrivateKeyBytes() {
-	let PrivateKey = document.getElementById('PrivateKey').value;
-	if (isEmpty(PrivateKey)) {
-		console.error('Private key is empty.');
-		return null;
-	}
-	if (KeyOptsElem.value !== "Hex") {
-		PrivateKey = B64ToHex(PrivateKey);
-	}
-	return new Uint8Array(await HexToArrayBuffer(PrivateKey));
-}
-
-// Returns an UInt8Array of the current Public Key in the GUI.
-// If the public key is not populated, the public key will attempt to be derived
-// from the seed, or private key. If both are empty, fails and returns null.
-async function getPublicKeyBytes() {
-	let PublicKey = document.getElementById('PublicKey').value;
-	if (isEmpty(PublicKey)) {
-		console.debug('PublicKey is empty... Attempting to derive from private key.');
-		let PrivateKey = document.getElementById('PrivateKey').value;
-		if (isEmpty(PrivateKey)) {
-			console.debug('PrivateKey is empty... Attempting to derive from the seed.');
-			let seed = document.getElementById('Seed').value;
-			if (isEmpty(seed)) {
-				console.error('Seed is empty.');
-				return null;
-			} else {
-				if (KeyOptsElem.value !== "Hex") {
-					seed = B64ToHex(seed);
-				}
-				PublicKey = await ArrayBufferToHex(await getPubKeyBytesFromPrivateKeyString(await HashHex("SHA-256", seed)));
-			}
-		} else {
-			PublicKey = await ArrayBufferToHex(await getPubKeyBytesFromPrivateKeyString(PrivateKey));
-		}
-	}
-
-	if (KeyOptsElem.value !== "Hex") {
-		PublicKey = B64ToHex(PublicKey);
-	}
-	return new Uint8Array(await HexToArrayBuffer(PublicKey));
-}
-
-// Returns a UInt8Array of the public key, from the private key string.
-async function getPubKeyBytesFromPrivateKeyString(string) {
-	let bytes;
-	if (KeyOptsElem.value === "Hex") {
-		bytes = await HexToArrayBuffer(string);
-	} else {
-		bytes = await HexToArrayBuffer(B64ToHex(string));
-	}
-	return await ed.getPublicKey(new Uint8Array(bytes));
-}
-
-// Returns a UInt8Array of the current Signature in the GUI.
-// If the signature is not populated, fails and returns null.
-async function getSignatureBytes() {
-	let Signature = document.getElementById('Signature').value;
-	if (isEmpty(Signature)) {
-		console.error('Signature is empty.');
-		return null;
-	}
-	if (KeyOptsElem.value !== "Hex") {
-		Signature = B64ToHex(Signature);
-	}
-	return new Uint8Array(await HexToArrayBuffer(Signature));
-}
-
-// Returns a UInt8Array of the current message in the GUI.
-// If message is empty, an empty UInt8Array will be returned.
-async function getMessageBytes() {
-	let Message = document.getElementById('InputMsg').value;
-	let messageBytes = new Uint8Array(); // Empty message is valid.
-
-	// console.debug(Message);
-	if (!isEmpty(Message)) {
-		switch (document.getElementById('MsgOpts').value) {
-			case "B64":
-				messageBytes = new Uint8Array(await HexToArrayBuffer(B64ToHex(Message)));
-				break;
-			case "Hex":
-				messageBytes = new Uint8Array(await HexToArrayBuffer(Message));
-				break;
-			case "Text":
-				let enc = new TextEncoder("utf-8"); // Suppose to be always in UTF-8.
-				messageBytes = enc.encode(Message);
-				break;
-			default:
-				console.error('unsupported message encoding');
-				return null;
-		}
-	}
-	return messageBytes;
-}
-
-// Sets all of the seed values in the GUI from the given seed string.
-// Key encoding must be set accordingly to the passed seed, before calling this
-// function.
-async function setSeedGUI(seed) {
-	let b64Seed;
-	let hexSeed;
-	if (KeyOptsElem.value !== "Hex") {
-		b64Seed = seed;
-		seed = B64ToHex(seed);
-		hexSeed = seed;
-	} else {
-		hexSeed = seed;
-		b64Seed = await HexTob64ut(seed);
-	}
-	// console.debug(b64Seed, hexSeed, seed);
-
-	document.getElementById('B64Seed').textContent = b64Seed;
-	document.getElementById('HexSeed').textContent = hexSeed;
-	setElemFromHex(document.getElementById('Seed'), seed);
-}
-
-// Sets the given element's value with the given Hex value, based on the selected
-// Key Options.
-// Will not work if the given element is a span. .textContent instead of .value
-// is needed for spans.
-async function setElemFromHex(elem, Hex) {
-	// console.debug(elem, Hex);
-	if (KeyOptsElem.value === "Hex") {
-		elem.value = Hex;
-		return;
-	}
-	elem.value = await HexTob64ut(Hex);
-}
-
-// Returns false if the byte length is incorrect, and true with correct length.
-function ed25519SigLenCheck(bytes) {
-	if (isEmpty(bytes.byteLength) || bytes.byteLength !== 64) {
-		console.error("Invalid Signature length");
-		return false;
-	}
-	return true;
-}
-
 
 ////////////////////////////////
 // Taken from Cyphrme Lib
@@ -296,7 +231,6 @@ function ed25519SigLenCheck(bytes) {
  * @returns  {string}            Hex representation.
  */
 function B64ToHex(b64) {
-	//  console.debug(b64);
 	let ub64 = URISafeToUnsafe(b64);
 	const raw = atob(ub64);
 	let result = '';
@@ -324,7 +258,7 @@ function URISafeToUnsafe(ub64) {
  * @returns {string}        String. b64ut RFC 4648 URI safe truncated.
  */
 async function HexTob64ut(hex) {
-	let ab = await HexToArrayBuffer(hex);
+	let ab = await HexToUI8(hex);
 	return await ArrayBufferTo64ut(ab);
 };
 
@@ -358,37 +292,28 @@ function ArrayBufferTo64ut(buffer) {
 	return base64t(URIUnsafeToSafe(btoa(string)));
 };
 
-// Returns the digest (in Hex) from the given Hex input and hash alg. Throws.
-async function HashHex(hashAlg, Hex) {
-	// console.debug(hashAlg, input);
-	if (isEmpty(hashAlg)) {
-		throw new Error("No hash algorithm specified");
-	}
-	return ArrayBufferToHex(await crypto.subtle.digest(hashAlg, await HexToArrayBuffer(Hex)));
-}
 
 /**
- * Taken from https://github.com/LinusU/hex-to-array-buffer  MIT license
- * @param   {string} Hex         String. Hexrepresentation
- * @returns {ArrayBuffer}        ArrayBuffer. 
+ * HexToUI8 converts string Hex to UInt8Array. 
+ * 
+ * @param   {Hex}          Hex   String Hex. 
+ * @returns {Uint8Array}        ArrayBuffer. 
  */
-async function HexToArrayBuffer(hex) {
-	if (typeof hex !== 'string') {
-		// console.debug(typeof hex);
-		throw new TypeError('base_convert.HexToArrayBuffer: Expected input to be a string')
+ async function HexToUI8(hex) {
+	if (hex === undefined) { // undefined is different from 0 since 0 == "AA"
+		return new Uint8Array();
 	}
 
 	if ((hex.length % 2) !== 0) {
-		throw new RangeError('base_convert.HexToArrayBuffer: Expected string to be an even number of characters')
+		throw new RangeError('HexToUI8: Hex is not even.')
 	}
 
-	var view = new Uint8Array(hex.length / 2)
-
+	var a = new Uint8Array(hex.length / 2)
 	for (var i = 0; i < hex.length; i += 2) {
-		view[i / 2] = parseInt(hex.substring(i, i + 2), 16)
+		a[i / 2] = parseInt(hex.substring(i, i + 2), 16)
 	}
 
-	return view.buffer
+	return a;
 };
 
 /**
