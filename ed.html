@@ -23,13 +23,21 @@
 
 
 		select,
-		button {
-			font-size: 100%;
+		button,
+		input,
+		label {
+			font-size: 16px;
 		}
 
 		#AppMessage {
 			font-weight: bold;
-			font-size: 150%;
+			font-size: 24px;
+		}
+
+
+		.footnote,
+		.footnote p {
+			font-size: 12px;
 		}
 	</style>
 
@@ -44,9 +52,7 @@
 
 	<div class="grid-container">
 
-		<label for="InputMsg">
-			✉️ Message:
-		</label>
+		<label for="InputMsg">✉️ Message:</label>
 		<div>
 			<textarea name="InputMsg" id="InputMsg" cols="50" rows="3"></textarea>
 			<br>
@@ -109,13 +115,13 @@
 	<div id="Hex">
 		<h3>Hex</h3>
 		<div class="grid-container">
-			<label for="SedHex">Seed: </label>
+			Seed:
 			<span id="SedHex"></span>
-			<label for="PukHex">Public Key: </label>
+			Public Key:
 			<span id="PukHex"></span>
-			<label for="KypHex">Seed || Public: </label>
+			Seed || Public:
 			<span id="KypHex"></span>
-			<label for="OSigHex">Signature: </label>
+			Signature:
 			<span id="OSigHex"></span>
 		</div>
 	</div>
@@ -123,35 +129,28 @@
 	<div id="Base64">
 		<h3>base64</h3>
 		<div class="grid-container">
-			<label for="Sed64">Seed: </label>
+			Seed:
 			<span id="Sed64"></span>
-			<label for="Puk64">Public Key: </label>
+			Public Key:
 			<span id="Puk64"></span>
-			<label for="KypB64">Seed || Public: </label>
+			Seed || Public:
 			<span id="Kyp64"></span>
-			<label for="OSig64">Signature: </label>
+			Signature:
 			<span id="OSig64"></span>
 		</div>
 	</div>
 	<br>
 
-	<footer>
-		<hr>
-		<div>
-
-			<h3> Links </h3>
-			<p> <a href="https://cyphr.me/ed25519_applet/ed.html">Live Demo (this page)</a></p>
-			<p><a href="https://github.com/cyphrme/ed25519_applet">Source code on Github</a></p>
-			<br>
-
-			<h4> See also </h4>
-			<p> <a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a> </p>
-			<p> <a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </p>
-			<p><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a></p>
-			<p><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Blog on Ed25519</a></p>
-			</p>
-		</div>
-	</footer>
+	<hr>
+	<div class="footnote">
+		<p><a href="https://cyphr.me/ed25519_applet/ed.html">Live Demo (this page)</a></p>
+		<p><a href="https://github.com/cyphrme/ed25519_applet">Source code on Github</a></p>
+		<p>See also:</p>
+		<p><a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a></p>
+		<p><a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </p>
+		<p><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a></p>
+		<p><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Blog on Ed25519</a></p>
+	</div>
 
 </body>
 

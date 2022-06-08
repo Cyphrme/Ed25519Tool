@@ -10,7 +10,6 @@ Live demo: https://cyphr.me/ed25519_applet/ed.html
 git clone https://github.com/Cyphrme/ed25519_applet.git
 ```
 
-
 Then, in your web browser, use `file://` to load `ed.html`
 
 ```
