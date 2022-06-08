@@ -4,7 +4,7 @@ Live demo: https://cyphr.me/ed25519_applet/ed.html
 
 ## This tool can run locally and offline
 
-`git clone` this project to a local directoy.  
+`git clone` this project to a local directory.  
 
 ```
 git clone https://github.com/Cyphrme/ed25519_applet.git
@@ -14,7 +14,7 @@ git clone https://github.com/Cyphrme/ed25519_applet.git
 Then, in your web browser, use `file://` to load `ed.html`
 
 ```
-file:///pathtodirectoy/ed.html
+file:///pathToDirectory/ed.html
 ```
 
 ## Signing and verification tool for Ed25519
