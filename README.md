@@ -2,8 +2,16 @@
 
 Live demo: https://cyphr.me/ed25519_applet/ed.html
 
-## This tool can be run locally
-In your web browser, use `file://` to load `ed.html`
+## This tool can run locally and offline
+
+`git clone` this project to a local directoy.  
+
+```
+git clone https://github.com/Cyphrme/ed25519_applet.git
+```
+
+
+Then, in your web browser, use `file://` to load `ed.html`
 
 ```
 file:///pathtodirectoy/ed.html
