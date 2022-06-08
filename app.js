@@ -5,6 +5,10 @@ var InputMsg;
 var MsgEncoding;
 var EdType;
 var KeyOptsElem;
+var Seed;
+var PublicKey;
+var Signature;
+var AppMessage;
 
 // DOM load
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,12 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
 	MsgEncoding = document.getElementById('MsgEncoding');
 	EdType = document.getElementById('EdType');
 	KeyOptsElem = document.getElementById('KeyOpts');
+	Seed = document.getElementById('Seed');
+	PublicKey = document.getElementById('PublicKey');
+	Signature = document.getElementById('Signature');
+	AppMessage = document.getElementById('AppMessage');
+
 
 	// Set event listeners for buttons.
 	document.getElementById('GenRandKeyPairBtn').addEventListener('click', GenRadomGUI);
 	document.getElementById('GenKeyPairBtn').addEventListener('click', KeyFromSeed);
 	document.getElementById('SignBtn').addEventListener('click', Sign);
 	document.getElementById('VerifyBtn').addEventListener('click', Verify);
+	document.getElementById('ClearBtn').addEventListener('click', ClearAll);
 });
 
 
@@ -52,11 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
  * @property {Uint8}    Kypb -   (Key Pair) Seed || Public Key.  
  * @property {Uint8}    Sigb -   Signature.
  * 
- * // Outputs.
- * // The rest of the outs come directly from ins.  
- * @property {Hex}      OSigHex - Out Signature Hex.
- * @property {b64}      OSig64 -  Out Signature b64.
- * 
  */
 
 
@@ -90,9 +95,9 @@ async function GetMSPPS() {
 		// TODO, Support ph and pure
 	}
 
-	let Sed = document.getElementById('Seed').value;
-	let Puk = document.getElementById('PublicKey').value;
-	let Sig = document.getElementById('Signature').value;
+	let Sed = Seed.value;
+	let Puk = PublicKey.value;
+	let Sig = Signature.value;
 
 	if (KeyOptsElem.value === "Hex") {
 		MSPPS.SedHex = Sed;
@@ -127,13 +132,15 @@ async function SetMSPPSFromHex(MSPPS) {
 
 function SetGuiIn(MSPPS) {
 	if (KeyOptsElem.value === "Hex") {
-		document.getElementById('Seed').value = MSPPS.SedHex;
-		document.getElementById('PublicKey').value = MSPPS.PukHex;
+		Seed.value = MSPPS.SedHex;
+		PublicKey.value = MSPPS.PukHex;
+		Signature.value = MSPPS.SigHex;
 	}
 
 	if (KeyOptsElem.value === "B64") {
-		document.getElementById('Seed').value = MSPPS.Sed64;
-		document.getElementById('PublicKey').value = MSPPS.Puk64;
+		Seed.value = MSPPS.Sed64;
+		PublicKey.value = MSPPS.Puk64;
+		Signature.value = MSPPS.Sig64;
 	}
 }
 
@@ -141,11 +148,11 @@ async function SetGuiOut(MSPPS) {
 	document.getElementById('SedHex').textContent = MSPPS.SedHex;
 	document.getElementById('PukHex').textContent = MSPPS.PukHex;
 	document.getElementById('KypHex').textContent = MSPPS.KypHex;
-	document.getElementById('OSigHex').textContent = MSPPS.OSigHex;
+	document.getElementById('OSigHex').textContent = MSPPS.SigHex;
 	document.getElementById('Sed64').textContent = MSPPS.Sed64;
 	document.getElementById('Puk64').textContent = MSPPS.Puk64;
 	document.getElementById('Kyp64').textContent = MSPPS.Kyp64;
-	document.getElementById('OSig64').textContent = MSPPS.OSig64;
+	document.getElementById('OSig64').textContent = MSPPS.Sig64;
 }
 
 
@@ -153,6 +160,8 @@ async function SetGuiOut(MSPPS) {
 async function GenRadomGUI() {
 	let MSPPS = {};
 	MSPPS.SedHex = await ArrayBufferToHex(await crypto.getRandomValues(new Uint8Array(32)));
+	MSPPS.SigHex = "";
+	AppMessage.textContent = "";
 	await SetMSPPSFromHex(MSPPS);
 	KeyFromSeed(MSPPS);
 }
@@ -163,7 +172,7 @@ async function GenRadomGUI() {
  * @param  {[MSPPS]} [MSPPS]    
  */
 async function KeyFromSeed(MSPPS) {
-	if(isEmpty(MSPPS.SedHex)){
+	if (isEmpty(MSPPS.SedHex)) {
 		MSPPS = await GetMSPPS();
 	}
 
@@ -181,41 +190,57 @@ async function KeyFromSeed(MSPPS) {
 
 // SignMsg Signs the current input message, depending on selected encoding method.
 async function Sign() {
-	let MSPPS = await GetMSPPS();
+	try {
+		var MSPPS = await GetMSPPS();
 
-	if (MSPPS.Sedb === undefined || MSPPS.Msg === undefined) {
-		console.debug("private key or message is empty.");
-		return;
+		if (MSPPS.Sedb === undefined || MSPPS.Msg === undefined) {
+			throw new SyntaxError("Private key or message is empty.")
+		}
+
+		MSPPS.SigHex = await ArrayBufferToHex(await window.nobleEd25519.sign(MSPPS.Msg, MSPPS.Sedb));
+		if (MSPPS.SigHex.length !== 128) {
+			throw new RangeError("Invalid Signature length")
+		}
+
+	} catch (error) {
+		AppMessage.textContent = "❌ " + error;
 	}
 
-	MSPPS.OSigHex = await ArrayBufferToHex(await window.nobleEd25519.sign(MSPPS.Msg, MSPPS.Sedb));
-	if (MSPPS.OSigHex.length !== 128) {
-		console.error("Invalid Signature length");
-		return false;
-	}
-
-	MSPPS.OSig64 = await HexTob64ut(MSPPS.OSigHex);
+	MSPPS.Sig64 = await HexTob64ut(MSPPS.SigHex);
+	SetGuiIn(MSPPS);
 	SetGuiOut(MSPPS);
 }
 
 // Verifies the current signature with the current message and public key.
-// Populates the ValidSignature span with the fail/success message.
+// Populates "#AppMessage" fail/success/error messages.
 async function Verify() {
-	let MSPPS = await GetMSPPS();
-	let valid = false;
-	let msg = "❌ Invalid Signature";
-	console.log(MSPPS);
 	try {
-		valid = await window.nobleEd25519.verify(MSPPS.Sigb, MSPPS.Msg, MSPPS.Pukb);
+		let MSPPS = await GetMSPPS();
+		var valid = await window.nobleEd25519.verify(MSPPS.Sigb, MSPPS.Msg, MSPPS.Pukb);
 	} catch (error) {
 		console.error(error);
-		valid = false;
 	}
-	if (valid) {
-		msg = "✅ Valid Signature";
+	if (!valid) {
+		AppMessage.textContent = "❌ Invalid Signature";
+		return;
 	}
 
-	document.getElementById('ValidSignature').textContent = msg;
+	AppMessage.textContent = "✅ Valid Signature";
+}
+
+
+
+async function ClearAll() {
+	InputMsg.value = "";
+	Seed.value = "";
+	PublicKey.value = "";
+	Signature.value = "";
+	AppMessage.textContent = "";
+
+
+	let MSPPS = await GetMSPPS();
+	SetGuiIn(MSPPS);
+	SetGuiOut(MSPPS);
 }
 
 ////////////////////////////////
@@ -297,7 +322,7 @@ function ArrayBufferTo64ut(buffer) {
  * @param   {Hex}          Hex   String Hex. 
  * @returns {Uint8Array}        ArrayBuffer. 
  */
- async function HexToUI8(hex) {
+async function HexToUI8(hex) {
 	if (hex === undefined) { // undefined is different from 0 since 0 == "AA"
 		return new Uint8Array();
 	}

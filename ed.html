@@ -27,7 +27,7 @@
 			font-size: 100%;
 		}
 
-		#ValidSignature {
+		#AppMessage {
 			font-weight: bold;
 			font-size: 150%;
 		}
@@ -58,16 +58,17 @@
 
 				<select name="EdType" id="EdType">
 					<option value="Msg">Message ("pure")</option>
-					<option value="Dig">Digest ("ph")</option>
+					<option value="Dig">Digest  ("ph")</option>
 				</select>
 			</label>
 		</div>
 
 		<p></p>
 		<div>
-			<button id="SignBtn">🔏 Sign</button>
-			<button title="Verify current signature, message, and public key." id="VerifyBtn">✅ Verify</button>
-			<span id="ValidSignature"></span>
+			<button title="Sign message using current seed." id="SignBtn">🔏 Sign</button>
+			<button title="Verify message using signature and public key." id="VerifyBtn">✅ Verify</button>
+			<button title="Reset the page and clear all boxes." id="ClearBtn">🚫 Clear all</button>
+			<span id="AppMessage"></span>
 		</div>
 	</div>
 
@@ -81,8 +82,8 @@
 				<option value="Hex">Hex</option>
 				<option value="B64">base64</option>
 			</select>
-			<button class="item-3" id="GenRandKeyPairBtn">🎲 Gen Random</button>
-			<button class="item-4" id="GenKeyPairBtn">🌱 Gen from Seed</button>
+			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲 Gen Random</button>
+			<button class="item-4" title="Generates public key from given seed." id="GenKeyPairBtn">🌱 Gen from Seed</button>
 		</div>
 		<label for="Seed">🌱 Seed (Private Key): </label>
 		<div>
