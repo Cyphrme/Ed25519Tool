@@ -37,8 +37,9 @@
 
 <body>
 	<h1>Ed25519 Sign or Verify</h1>
-	<h2>In</h2>
 	<hr>
+	<h2>In</h2>
+
 
 
 	<div class="grid-container">
@@ -50,15 +51,15 @@
 			<textarea name="InputMsg" id="InputMsg" cols="50" rows="3"></textarea>
 			<br>
 			<label for="InputMsg">
-				<select name="MsgEncoding" id="MsgEncoding">
+				<select title="Input encoding of message" name="MsgEncoding" id="MsgEncoding">
 					<option value="Text">Text (UTF-8)</option>
 					<option value="Hex">Hex</option>
 					<option value="B64">base64</option>
 				</select>
 
-				<select name="EdType" id="EdType">
+				<select title="The pure option uses PureEdDSA without pre-hashing. The digest option uses HashEdDSA (Ed25519ph) and expects pre-hashed (SHA-512) digest." name="EdType" id="EdType">
 					<option value="Msg">Message ("pure")</option>
-					<option value="Dig">Digest  ("ph")</option>
+					<option value="Dig">Digest ("ph")</option>
 				</select>
 			</label>
 		</div>
@@ -73,7 +74,6 @@
 	</div>
 
 
-	<br><br>
 
 	<div class="grid-container">
 		<label for="KeyOpts"></label>
@@ -103,11 +103,8 @@
 
 	<br>
 
-
-	<h2>Out</h2>
 	<hr>
-
-
+	<h2>Out</h2>
 
 	<div id="Hex">
 		<h3>Hex</h3>
@@ -123,7 +120,6 @@
 		</div>
 	</div>
 
-
 	<div id="Base64">
 		<h3>base64</h3>
 		<div class="grid-container">
@@ -137,22 +133,20 @@
 			<span id="OSig64"></span>
 		</div>
 	</div>
-
-	<br><br><br><br>
+	<br>
 
 	<footer>
 		<hr>
 		<div>
-			<p>
-				Input with `Message ("pure")` option uses PureEdDSA without pre-hashing the message. <br>
-				Input with `Digest ("ph")` is HashEdDSA (Ed25519ph) and expects input to be a pre-hashed (SHA-512) digest.
-			</p><br>
 
-			<hr>
+			<h3> Links </h3>
+			<p> <a href="https://cyphr.me/ed25519_applet/ed.html">Live Demo (this page)</a></p>
+			<p><a href="https://github.com/cyphrme/ed25519_applet">Source code on Github</a></p>
+			<br>
 			<h3> Naming Differences in Implementations </h3>
 			<p>
 				Many libraries, including this tool, refer to what the RFC calls "private key" as the "seed" (like <a href="https://pkg.go.dev/crypto/ed25519">Go</a>).
-				The 32 byte seed is used to generate  the private component, the public key,  and the "prefix".
+				The 32 byte seed is used to generate the private component, the public key, and the "prefix".
 				<br>
 				What some libraries call the "private key" (64 bytes) is the seed (32 bytes) concatenated with the public key (32 bytes).
 				(Caching the public key precludes relatively slow regeneration when signing.)
@@ -164,19 +158,16 @@
 				from seed and is used for signing and is also typically regenerated on signing.
 
 				<br>
-				NaCL used to return the the private key as the "secret scalar s" with the "prefix". Instead of doing that most libraries simply regenerate 
+				NaCL used to return the the private key as the "secret scalar s" with the "prefix". Instead of doing that most libraries simply regenerate
 				both secret scalar s and prefix from seed, and optionally cache the public key.
 			</p>
 
-			<h3> Links </h3>
-			<p> <a href="https://cyphr.me/ed25519_applet/ed.html">Live Demo (this page)</a></p>
-			<p><a href="https://github.com/cyphrme/ed25519_applet">Source code on Github</a></p>
-			<br>
-			<p> See also: </p>
+
+			<h4> See also </h4>
 			<p> <a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a> </p>
 			<p> <a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </p>
-			<p><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a>
-				<p><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Blog on Ed25519</a></p>
+			<p><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a></p>
+			<p><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Blog on Ed25519</a></p>
 			</p>
 		</div>
 	</footer>
