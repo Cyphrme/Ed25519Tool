@@ -172,15 +172,20 @@ async function GenRadomGUI() {
  * @param  {[MSPPS]} [MSPPS]    
  */
 async function KeyFromSeed(MSPPS) {
-	if (isEmpty(MSPPS.SedHex)) {
-		MSPPS = await GetMSPPS();
+	try {
+		AppMessage.textContent = "";
+		if (isEmpty(MSPPS.SedHex)) {
+			MSPPS = await GetMSPPS();
+		}
+		// Ed25519 uses the lower 32 bytes of SHA-512
+		// https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5
+		let k = await window.nobleEd25519.utils.getExtendedPublicKey(MSPPS.Sedb);
+		MSPPS.PukHex = k.point.toHex().toUpperCase();
+		MSPPS.KypHex = MSPPS.SedHex + MSPPS.PukHex;
+	} catch (error) {
+		AppMessage.textContent = "❌ " + error;
+		return;
 	}
-
-	// Ed25519 uses the lower 32 bytes of SHA-512
-	// https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5
-	let k = await window.nobleEd25519.utils.getExtendedPublicKey(MSPPS.Sedb);
-	MSPPS.PukHex = k.point.toHex().toUpperCase();
-	MSPPS.KypHex = MSPPS.SedHex + MSPPS.PukHex;
 
 	await SetMSPPSFromHex(MSPPS);
 	SetGuiIn(MSPPS);
@@ -204,6 +209,7 @@ async function Sign() {
 
 	} catch (error) {
 		AppMessage.textContent = "❌ " + error;
+		return;
 	}
 
 	MSPPS.Sig64 = await HexTob64ut(MSPPS.SigHex);
