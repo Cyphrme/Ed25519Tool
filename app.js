@@ -1,7 +1,5 @@
 "use strict";
 
-import * as _ from './noble-ed25519.js';
-
 // GUI Element variables
 var InputMsg;
 var MsgEncoding;
