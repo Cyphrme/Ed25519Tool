@@ -32,10 +32,29 @@ Keys:     Base64 and Hex.
 
 
 # Naming Differences in Implementations
-Many libraries, including this tool, refer to what the RFC calls "private key" as the "seed" (like Go). The 32 byte seed is used to generate the private component, the public key, and the "prefix".
-What some libraries call the "private key" (64 bytes) is the seed (32 bytes) concatenated with the public key (32 bytes). (Caching the public key precludes relatively slow regeneration when signing.)
-The "actual" private component ("secret scalar s" as named by the RFC (Section 5.1.5.3)) is typically regenerated from seed on signing. The public component is computed from "secret scalar s", but the "prefix" (nounce) is generated from seed and is used for signing and is also typically regenerated on signing.
-NaCL used to return the the private key as the "secret scalar s" with the "prefix". Instead of doing that most libraries simply regenerate both secret scalar s and prefix from seed, and optionally cache the public key.
+Many libraries, including this tool, refer to what the RFC calls "private key"
+as the "seed" (like [Go ](https://pkg.go.dev/crypto/ed25519)). The 32 byte seed
+is used to generate the private component "secret scalar s", the public key, and
+the "prefix" (nounce).
+
+The ["actual" private component
+](https://github.com/paulmillr/noble-ed25519/blob/ffdc7026d70297754a825f6e991426188891d1de/index.ts#L903)
+(secret scalar s as [named by the RFC (Section 5.1.5.3))
+](https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5") is typically
+regenerated from seed on signing, although it is possible to use secret scalar s
+and prefix to sign without the seed. The public component is computed from
+"secret scalar s", but prefix is generated from seed and is used for signing.
+  NaCL used to return the [private key as secret scalar s concatenated with
+prefix
+](https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/#:~:text=%20is%20the%20private%20scalar).
+Instead of requiring  secret scalar s and prefix for signing, most libraries
+required seed and regenerate both secret scalar s and prefix from seed, and
+optionally cache the public key.
+
+What some libraries call the "private key" (64 bytes) is the seed (32 bytes)
+concatenated with the public key (32 bytes). (Caching the public key precludes
+relatively slow regeneration when signing.)
+
 
 # TODO
 #### Ed25519ph
