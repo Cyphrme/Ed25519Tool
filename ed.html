@@ -8,6 +8,8 @@
 	<script src="app.js"></script>
 	<script src="noble-ed25519.js"></script>
 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 
 	<style>
 		* {
@@ -16,7 +18,7 @@
 
 		.grid-container {
 			display: grid;
-			grid-template-columns: 130px auto;
+			grid-template-columns: 140px auto;
 			row-gap: 10px;
 			align-items: center;
 		}
@@ -24,8 +26,15 @@
 		select,
 		button,
 		input,
-		label {
-			font-size: 16px;
+		textarea,
+		label,
+		p {
+			font-size: 18px;
+		}
+
+		button, select, input, textarea{
+		padding:7px;
+		margin:5px;
 		}
 
 		#AppMessage {
@@ -36,7 +45,7 @@
 
 		.footnote,
 		.footnote p {
-			font-size: 12px;
+			font-size: 14px;
 		}
 	</style>
 </head>
@@ -52,7 +61,7 @@
 
 		<label for="InputMsg">✉️ Message:</label>
 		<div>
-			<textarea name="InputMsg" id="InputMsg" cols="50" rows="3"></textarea>
+			<textarea name="InputMsg" id="InputMsg" cols="50" rows="4"></textarea>
 			<br>
 			<label for="InputMsg">
 				<select title="Input encoding of message" name="MsgEncoding" id="MsgEncoding">
@@ -76,7 +85,6 @@
 			<span id="AppMessage"></span>
 		</div>
 	</div>
-
 
 
 	<div class="grid-container">
@@ -104,8 +112,6 @@
 	</div>
 
 
-
-	<br>
 
 	<hr>
 	<h2>Out</h2>
