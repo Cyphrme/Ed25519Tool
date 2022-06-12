@@ -3,49 +3,60 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>ed25519</title>
+	<title>Ed25519 Tool</title>
 
 	<script src="app.js"></script>
 	<script src="noble-ed25519.js"></script>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="keywords" content="Ed25519 online tool, Ed25519ph" />
 
 
 	<style>
 		* {
 			font-family: 'Ubuntu Mono', monospace;
-		}
-
-		.grid-container {
-			display: grid;
-			grid-template-columns: 140px auto;
-			row-gap: 10px;
-			align-items: center;
-		}
-
-		select,
-		button,
-		input,
-		textarea,
-		label,
-		p {
 			font-size: 18px;
 		}
 
-		button, select, input, textarea{
-		padding:7px;
-		margin:5px;
+
+		body {
+			margin-left: 20px;
 		}
 
-		#AppMessage {
+		button,
+		select,
+		input,
+		textarea {
+			padding: 7px;
+			margin: 5px;
+		}
+
+		li {
+			padding-bottom: 15px;
+		}
+
+		span {
+			white-space: nowrap;
+		}
+
+		#AppMessage,
+		h1 {
 			font-weight: bold;
 			font-size: 24px;
 		}
 
 
 		.footnote,
-		.footnote p {
-			font-size: 14px;
+		.footnote p,
+		.footnote a {
+			font-size: 16px;
+		}
+
+		.grid-container {
+			display: grid;
+			align-items: center;
+			grid-template-columns: 140px auto;
+			row-gap: 12px;
 		}
 	</style>
 </head>
@@ -75,6 +86,7 @@
 					<option value="Dig">Digest ("ph")</option>
 				</select>
 			</label>
+			<span id="AppMessage"></span>
 		</div>
 
 		<p></p>
@@ -82,12 +94,9 @@
 			<button title="Sign message using current seed." id="SignBtn">🔏 Sign</button>
 			<button title="Verify message using signature and public key." id="VerifyBtn">✅ Verify</button>
 			<button title="Reset the page and clear all boxes." id="ClearBtn">🚫 Clear all</button>
-			<span id="AppMessage"></span>
+			
 		</div>
-	</div>
 
-
-	<div class="grid-container">
 		<label for="KeyOpts"></label>
 		<div>
 			<select name="KeyOpts" id="KeyOpts">
@@ -147,15 +156,18 @@
 
 	<hr>
 	<div class="footnote">
-		<p><a href="https://cyphr.me/ed25519_applet/ed.html">Live Demo (this page)</a></p>
-		<p><a href="https://github.com/cyphrme/ed25519_applet">Source code on Github</a></p>
-		<p>See also:</p>
-		<p><a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a></p>
-		<p><a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </p>
-		<p><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a></p>
-		<p><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Blog on Ed25519</a></p>
-	</div>
+		<ul>
+			<li><a href="https://cyphr.me/ed25519_applet/ed.html">Live Demo (this page)</a></li>
+			<li><a href="https://github.com/cyphrme/ed25519_applet">Source code on Github</a></li>
 
+		<br>
+			<li><a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a></li>
+			<li><a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </li>
+			<li><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a></li>
+			<li><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Mozilla blog, "How do Ed5519 keys work?"</a></li>
+
+		</ul>
+	</div>
 </body>
 
 </html>
