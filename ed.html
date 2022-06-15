@@ -11,7 +11,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="keywords" content="Ed25519 online tool, Ed25519ph" />
 
-
 	<style>
 		* {
 			font-family: 'Ubuntu Mono', monospace;
@@ -70,7 +69,7 @@
 
 	<div class="grid-container">
 
-		<label for="InputMsg">✉️ Message:</label>
+		<label for="InputMsg">✉️ Message</label>
 		<div>
 			<textarea name="InputMsg" id="InputMsg" cols="50" rows="4"></textarea>
 			<br>
@@ -86,15 +85,17 @@
 					<option value="Dig">Digest ("ph")</option>
 				</select>
 			</label>
-			<span id="AppMessage"></span>
+
 		</div>
+		<p></p>
+		<span id="AppMessage"></span>
 
 		<p></p>
 		<div>
 			<button title="Sign message using current seed." id="SignBtn">🔏 Sign</button>
 			<button title="Verify message using signature and public key." id="VerifyBtn">✅ Verify</button>
 			<button title="Reset the page and clear all boxes." id="ClearBtn">🚫 Clear all</button>
-			
+
 		</div>
 
 		<label for="KeyOpts"></label>
@@ -106,15 +107,15 @@
 			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲 Gen Random</button>
 			<button class="item-4" title="Generates public key from given seed." id="GenKeyPairBtn">🌱 Gen from Seed</button>
 		</div>
-		<label for="Seed">🌱 Seed (Private Key): </label>
+		<label for="Seed">🌱 Seed (Private Key </label>
 		<div>
 			<input type="text" id="Seed" size="64">
 		</div>
-		<label for="PublicKey">🔑 Public Key: </label>
+		<label for="PublicKey">🔑 Public Key</label>
 		<div>
 			<input type="text" id="PublicKey" size="64">
 		</div>
-		<label for="Signature">✍️ Signature: </label>
+		<label for="Signature">✍️ Signature</label>
 		<div>
 			<input type="text" id="Signature" size="128">
 		</div>
@@ -160,7 +161,7 @@
 			<li><a href="https://cyphr.me/ed25519_applet/ed.html">Live Demo (this page)</a></li>
 			<li><a href="https://github.com/cyphrme/ed25519_applet">Source code on Github</a></li>
 
-		<br>
+			<br>
 			<li><a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a></li>
 			<li><a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </li>
 			<li><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a></li>
