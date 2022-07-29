@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /**
- * GetMSPPS gets from Gui and returns MSPPS
+ * GetMSPPS gets values from gui and returns MSPPS.
  * 
  * @returns  {MSPPS}        
  */
@@ -91,8 +91,9 @@ async function GetMSPPS() {
 			return null;
 	}
 
-	if (EdType.value === "Msg") {
-		// TODO, Support ph and pure
+	if (EdType.value === "Dig") {
+		// TODO, Support Ed25519ph
+		console.error("Ed25519ph is currently not supported.")
 	}
 
 	let Sed = Seed.value;
@@ -113,13 +114,30 @@ async function GetMSPPS() {
 		MSPPS.SigHex = B64ToHex(Sig);
 	}
 
+	if (isEmpty(MSPPS.SedHex)){
+		throw new SyntaxError("Private key is empty.")
+	}
+	if (MSPPS.SedHex.length == 128) {
+	// Check if seed/private key is 64 bytes.  If so, assume `seed || public key`
+	// and discard given public key.  
+		MSPPS.SedHex = MSPPS.SedHex.slice(0, 64);
+	}
+	if (MSPPS.SedHex.length !== 64){
+		throw new SyntaxError("Seed is not 32 bytes.")
+	}
+
 	await SetMSPPSFromHex(MSPPS);
+	if (isEmpty(MSPPS.Puk)){
+		KeyFromSeed(MSPPS);
+	}
+
 	return MSPPS;
 }
 
 // Sets the byte and base64 values from the Hex values.  Sets in place (no
 // return).
 async function SetMSPPSFromHex(MSPPS) {
+	console.log(MSPPS);
 	MSPPS.Sed64 = await HexTob64ut(MSPPS.SedHex);
 	MSPPS.Puk64 = await HexTob64ut(MSPPS.PukHex);
 	MSPPS.Kyp64 = await HexTob64ut(MSPPS.KypHex);
@@ -196,17 +214,16 @@ async function KeyFromSeed(MSPPS) {
 // SignMsg Signs the current input message, depending on selected encoding method.
 async function Sign() {
 	try {
+		Signature.value = "";
 		var MSPPS = await GetMSPPS();
-
-		if (MSPPS.Sedb === undefined || MSPPS.Msg === undefined) {
-			throw new SyntaxError("Private key or message is empty.")
+		if (MSPPS.Sedb === undefined)  {
+			throw new SyntaxError("Private key is empty.")
 		}
-
+		
 		MSPPS.SigHex = await ArrayBufferToHex(await window.nobleEd25519.sign(MSPPS.Msg, MSPPS.Sedb));
-		if (MSPPS.SigHex.length !== 128) {
+		if (MSPPS.SigHex.length !== 128) { // Sanity check
 			throw new RangeError("Invalid Signature length")
 		}
-
 	} catch (error) {
 		AppMessage.textContent = "❌ " + error;
 		return;

@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Ed25519 Tool</title>
+	<title>Ed25519 Online Tool</title>
 
 	<script src="app.js"></script>
 	<script src="noble-ed25519.js"></script>
@@ -61,20 +61,20 @@
 </head>
 
 <body>
-	<h1>Ed25519 Sign or Verify</h1>
+	<h1>Ed25519 Online Tool - Sign or Verify</h1>
+	<h3> This tool may be used offline and does not transmit keys. Key generation is done locally in browser. </h3>
 	<hr>
-	<h2>In</h2>
+	<h2>Input</h2>
 
 
 
 	<div class="grid-container">
-
 		<label for="InputMsg">✉️ Message</label>
 		<div>
 			<textarea name="InputMsg" id="InputMsg" cols="50" rows="4"></textarea>
 			<br>
 			<label for="InputMsg">
-				<select title="Input encoding of message" name="MsgEncoding" id="MsgEncoding">
+				<select title="Encoding of input message" name="MsgEncoding" id="MsgEncoding">
 					<option value="Text">Text (UTF-8)</option>
 					<option value="Hex">Hex</option>
 					<option value="B64">base64</option>
@@ -85,29 +85,28 @@
 					<option value="Dig">Digest ("ph")</option>
 				</select>
 			</label>
-
 		</div>
-		<p></p>
-		<span id="AppMessage"></span>
 
 		<p></p>
 		<div>
-			<button title="Sign message using current seed." id="SignBtn">🔏 Sign</button>
-			<button title="Verify message using signature and public key." id="VerifyBtn">✅ Verify</button>
-			<button title="Reset the page and clear all boxes." id="ClearBtn">🚫 Clear all</button>
-
+			<button id="SignBtn" title="Sign message using current seed.">🔏 Sign</button>
+			<button id="VerifyBtn" title="Verify message using signature and public key.">✅ Verify</button>
+			<span id="AppMessage"></span>
+			<br>
+			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲 Gen Random</button>
+			<button class="item-4" title="Generates public key from given seed." id="GenKeyPairBtn">⚙️ Public Key from Seed</button>
+			<button id="ClearBtn" title="Reset the page and clear all boxes.">🚫 Clear all</button>
 		</div>
 
-		<label for="KeyOpts"></label>
+		<label for="KeyOpts">Key Encoding</label>
 		<div>
-			<select name="KeyOpts" id="KeyOpts">
+			<select name="KeyOpts" id="KeyOpts" title="Encoding of Input Key">
 				<option value="Hex">Hex</option>
 				<option value="B64">base64</option>
 			</select>
-			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲 Gen Random</button>
-			<button class="item-4" title="Generates public key from given seed." id="GenKeyPairBtn">🌱 Gen from Seed</button>
+
 		</div>
-		<label for="Seed">🌱 Seed (Private Key </label>
+		<label for="Seed">🌱 Seed (Private Key)</label>
 		<div>
 			<input type="text" id="Seed" size="64">
 		</div>
@@ -119,49 +118,47 @@
 		<div>
 			<input type="text" id="Signature" size="128">
 		</div>
+
+
+
+		<div class="grid-container">
+			Hex Seed:<span id="SedHex"></span>
+			Hex Seed || Public:<span id="KypHex"></span>
+			base64 Seed:<span id="Sed64"></span>
+			base64 Seed || Public:<span id="Kyp64"></span>
+		</div>
 	</div>
 
-
+	<br>
+	<br>
 
 	<hr>
-	<h2>Out</h2>
+	<h2>Output</h2>
 
-	<div id="Hex">
-		<h3>Hex</h3>
-		<div class="grid-container">
-			Seed:
-			<span id="SedHex"></span>
-			Public Key:
-			<span id="PukHex"></span>
-			Seed || Public:
-			<span id="KypHex"></span>
-			Signature:
-			<span id="OSigHex"></span>
-		</div>
+
+	<div class="grid-container">
+		Hex Public Key:
+		<span id="PukHex"></span>
+		Hex Signature:
+		<span id="OSigHex"></span>
+
+		base64 Public Key:
+		<span id="Puk64"></span>
+		base64 Signature:
+		<span id="OSig64"></span>
 	</div>
 
-	<div id="Base64">
-		<h3>base64</h3>
-		<div class="grid-container">
-			Seed:
-			<span id="Sed64"></span>
-			Public Key:
-			<span id="Puk64"></span>
-			Seed || Public:
-			<span id="Kyp64"></span>
-			Signature:
-			<span id="OSig64"></span>
-		</div>
-	</div>
+	<br>
 	<br>
 
 	<hr>
 	<div class="footnote">
 		<ul>
-			<li><a href="https://cyphr.me/ed25519_applet/ed.html">Live Demo (this page)</a></li>
-			<li><a href="https://github.com/cyphrme/ed25519_applet">Source code on Github</a></li>
+			<li><a href="https://github.com/Cyphrme/ed25519_tool">Source code on Github</a></li>
+			<li><a href="https://cyphr.me/ed25519_tool/ed.html">Live Demo (this page)</a></li>
 
 			<br>
+			<li><a href="https://convert.zamicol.com/?inAlph=base64&outAlph=Hex"> Convert Hex to base64 or base64 to Hex </a></li>
 			<li><a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a></li>
 			<li><a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </li>
 			<li><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a></li>

@@ -1,13 +1,15 @@
-# Ed25519 Applet
+# Ed25519 Online Tool
 
-Live demo: https://cyphr.me/ed25519_applet/ed.html
+Sign or Verify Messages using Ed25519
+
+Live demo: https://cyphr.me/ed25519_tool/ed.html
 
 ## This tool can run locally and offline
 
 `git clone` this project to a local directory.  
 
 ```
-git clone https://github.com/Cyphrme/ed25519_applet.git
+git clone https://github.com/Cyphrme/ed25519_tool.git
 ```
 
 Then, in your web browser, use `file://` to load `ed.html`
@@ -34,26 +36,23 @@ Keys:     Base64 and Hex.
 # Naming Differences in Implementations
 Many libraries, including this tool, refer to what the RFC calls "private key"
 as the "seed" (like [Go ](https://pkg.go.dev/crypto/ed25519)). The 32 byte seed
-is used to generate the private component "secret scalar s", the public key, and
-the "prefix" (nounce).
+is used to generate the private component "secret scalar s" (sss), the public
+key, and the "prefix" (nounce).
 
-The ["actual" private component
-](https://github.com/paulmillr/noble-ed25519/blob/ffdc7026d70297754a825f6e991426188891d1de/index.ts#L903)
-(secret scalar s as [named by the RFC (Section 5.1.5.3))
-](https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5") is typically
-regenerated from seed on signing, although it is possible to use secret scalar s
-and prefix to sign without the seed. The public component is computed from
-"secret scalar s", but prefix is generated from seed and is used for signing.
-  NaCL used to return the [private key as secret scalar s concatenated with
-prefix
+The ["actual" private component](https://github.com/paulmillr/noble-ed25519/blob/ffdc7026d70297754a825f6e991426188891d1de/index.ts#L903)
+(secret scalar s as [named by the RFC (Section 5.1.5.3))](https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5") is typically
+regenerated from seed on signing, although it is possible to use sss and prefix
+to sign without the seed. The public component is computed from sss, but prefix
+  is generated from seed and is used for signing. NaCL used to return the
+[private key as sss concatenated with prefix
 ](https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/#:~:text=%20is%20the%20private%20scalar).
-Instead of requiring  secret scalar s and prefix for signing, most libraries
-required seed and regenerate both secret scalar s and prefix from seed, and
-optionally cache the public key.
 
-What some libraries call the "private key" (64 bytes) is the seed (32 bytes)
-concatenated with the public key (32 bytes). (Caching the public key precludes
-relatively slow regeneration when signing.)
+Instead of requiring sss and prefix for signing, most libraries required seed
+and regenerate both sss and prefix from seed, and optionally cache the public
+key since caching the public key precludes relatively slow regeneration when
+signing.  What some libraries call the "private key" (64 bytes) is the seed (32
+bytes) concatenated with the public key (32 bytes). For example, Go's "private
+key" is `seed || public key`.   
 
 
 # TODO

@@ -1,4 +1,4 @@
-// `join.js` instructs esbuild to join all ed25519 applet js files into one
+// `join.js` instructs esbuild to join all ed25519 tool js files into one
 // file. Use one of the following commands for either human readable or
 // minified.  From ESBuild's docs concerning for multiple files:
 //
@@ -8,7 +8,7 @@
 // together with esbuild, import them all into a single entry point file and
 // bundle just that one file with esbuild.
 //
-// For single page applets, or non modules, use `iife` format. This app was
+// For single page, or non modules, use `iife` format. This app was
 // created with:
 //
 // ```

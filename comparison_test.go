@@ -1,4 +1,4 @@
-package ed25519applet
+package ed25519tool
 
 import (
 	"crypto/ed25519"
