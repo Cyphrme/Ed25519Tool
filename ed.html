@@ -7,6 +7,7 @@
 
 	<script src="app.js"></script>
 	<script src="noble-ed25519.js"></script>
+	<script src="urlformjs/urlform.js"></script>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="keywords" content="Ed25519 online tool, Ed25519ph" />
@@ -80,7 +81,9 @@
 					<option value="B64">base64</option>
 				</select>
 
-				<select title="The pure option uses PureEdDSA without pre-hashing. The digest option uses HashEdDSA (Ed25519ph) and expects pre-hashed (SHA-512) digest." name="EdType" id="EdType">
+				<select
+					title="The pure option uses PureEdDSA without pre-hashing. The digest option uses HashEdDSA (Ed25519ph) and expects pre-hashed (SHA-512) digest."
+					name="EdType" id="EdType">
 					<option value="Msg">Message ("pure")</option>
 					<option value="Dig">Digest ("ph")</option>
 				</select>
@@ -93,9 +96,17 @@
 			<button id="VerifyBtn" title="Verify message using signature and public key.">✅ Verify</button>
 			<span id="AppMessage"></span>
 			<br>
-			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲 Gen Random</button>
-			<button class="item-4" title="Generates public key from given seed." id="GenKeyPairBtn">⚙️ Public Key from Seed</button>
+			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲 Gen
+				Random</button>
+			<button class="item-4" title="Generates public key from given seed." id="GenKeyPairBtn">⚙️ Public Key from
+				Seed</button>
 			<button id="ClearBtn" title="Reset the page and clear all boxes.">🚫 Clear all</button>
+		</div>
+
+		<p></p>
+		<div>
+			<button id="shareURLBtn" title="Share URL with current set values."> Share</button>
+			<span id="shareURL"></span>
 		</div>
 
 		<label for="KeyOpts">Key Encoding</label>
@@ -118,8 +129,6 @@
 		<div>
 			<input type="text" id="Signature" size="128">
 		</div>
-
-
 
 		<div class="grid-container">
 			Hex Seed:<span id="SedHex"></span>
@@ -158,11 +167,13 @@
 			<li><a href="https://cyphr.me/ed25519_tool/ed.html">Live Demo (this page)</a></li>
 
 			<br>
-			<li><a href="https://convert.zamicol.com/?inAlph=base64&outAlph=Hex"> Convert Hex to base64 or base64 to Hex </a></li>
+			<li><a href="https://convert.zamicol.com/?inAlph=base64&outAlph=Hex"> Convert Hex to base64 or base64 to Hex </a>
+			</li>
 			<li><a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a></li>
 			<li><a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </li>
 			<li><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a></li>
-			<li><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Mozilla blog, "How do Ed5519 keys work?"</a></li>
+			<li><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Mozilla blog, "How do Ed5519 keys
+					work?"</a></li>
 
 		</ul>
 	</div>

@@ -1,5 +1,43 @@
 "use strict";
 
+/**
+ * MSPPS holds the GUI values for the message, seed, key, and signature.
+ * 
+ * - Msg:      Msg in bytes, UTF-8 if relevant.
+ * 
+ * - SedHex:   Seed Hex.
+ * - PubHex:   Public Key Hex.
+ * - KypHex:   (Key Pair) Seed || Public Key.
+ * - SigHex:   Signature Hex.
+ * 
+ * - Sed64:    Seed b64.
+ * - Puk64:    Public Key b64.
+ * - Kyp64:    (Key Pair) Seed || Public Key.  
+ * - Sig64:    Signature b64.
+ * 
+ * - Sedb:     Seed bytes.
+ * - Pukb:     Public Key
+ * - Kypb:     (Key Pair) Seed || Public Key.  
+ * - Sigb:     Signature.
+ * @typedef  {{}}       MSPPS
+ * @property {Uint8}    Msg
+ * 
+ * @property {Hex}      SedHex
+ * @property {Hex}      PukHex 
+ * @property {Hex}      KypHex
+ * @property {Hex}      SigHex
+ * 
+ * @property {b64}      Sed64
+ * @property {b64}      Puk64
+ * @property {b64}      Kyp64
+ * @property {b64}      Sig64
+ * 
+ * @property {Uint8}    Sedb
+ * @property {Uint8}    Pukb
+ * @property {Uint8}    Kypb
+ * @property {Uint8}    Sigb
+ */
+
 // GUI Element variables
 var InputMsg;
 var MsgEncoding;
@@ -10,8 +48,36 @@ var PublicKey;
 var Signature;
 var AppMessage;
 
+// URLFormJS sticky form
+let EdFormOptions = [{
+	"name": "msg",
+	"id": "InputMsg",
+}, {
+	"name": "msg_encoding",
+	"id": "MsgEncoding",
+}, {
+	"name": "msg_type",
+	"id": "EdType",
+}, {
+	"name": "key_encoding",
+	"id": "KeyOpts"
+}, {
+	"name": "seed",
+	"id": "Seed"
+}, {
+	"name": "key",
+	"id": "PublicKey"
+}, {
+	"name": "sig",
+	"id": "Signature"
+}, ];
+
+
 // DOM load
 document.addEventListener('DOMContentLoaded', () => {
+	window.urlformjs.Init(EdFormOptions);
+	window.urlformjs.PopulateFromURI();
+
 	InputMsg = document.getElementById('InputMsg');
 	MsgEncoding = document.getElementById('MsgEncoding');
 	EdType = document.getElementById('EdType');
@@ -29,41 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.getElementById('VerifyBtn').addEventListener('click', Verify);
 	document.getElementById('ClearBtn').addEventListener('click', ClearAll);
 });
-
-
-/**
- * @typedef OutSig
- * @type {object}
- * 
- * @property {Uint8}    bytes
- * @property {Hex}      Hex
- * @property {b64}      b64
- */
-
-
-/**
- * @typedef MSPPS
- * @type {object}
- * // Inputs
- * @property {Uint8}    Msg -   Msg in bytes, UTF-8 if relevant.
- * 
- * @property {Hex}      SedHex - Seed Hex.
- * @property {Hex}      PukHex - Public Key Hex.
- * @property {Hex}      KypHex - (Key Pair) Seed || Public Key.  
- * @property {Hex}      SigHex - Signature Hex.
- * 
- * @property {b64}      Sed64 -  Seed b64.
- * @property {b64}      Puk64 -  Public Key b64.
- * @property {b64}      Kyp64 -  (Key Pair) Seed || Public Key.  
- * @property {b64}      Sig64 -  Signature b64.
- * 
- * @property {Uint8}    Sedb -   Seed bytes.
- * @property {Uint8}    Pukb -   Public Key
- * @property {Uint8}    Kypb -   (Key Pair) Seed || Public Key.  
- * @property {Uint8}    Sigb -   Signature.
- * 
- */
-
 
 /**
  * GetMSPPS gets values from gui and returns MSPPS.
@@ -114,30 +145,34 @@ async function GetMSPPS() {
 		MSPPS.SigHex = B64ToHex(Sig);
 	}
 
-	if (isEmpty(MSPPS.SedHex)){
+	if (isEmpty(MSPPS.SedHex)) {
 		throw new SyntaxError("Private key is empty.")
 	}
 	if (MSPPS.SedHex.length == 128) {
-	// Check if seed/private key is 64 bytes.  If so, assume `seed || public key`
-	// and discard given public key.  
+		// Check if seed/private key is 64 bytes.  If so, assume `seed || public key`
+		// and discard given public key.  
 		MSPPS.SedHex = MSPPS.SedHex.slice(0, 64);
 	}
-	if (MSPPS.SedHex.length !== 64){
+	if (MSPPS.SedHex.length !== 64) {
 		throw new SyntaxError("Seed is not 32 bytes.")
 	}
 
 	await SetMSPPSFromHex(MSPPS);
-	if (isEmpty(MSPPS.Puk)){
+	if (isEmpty(MSPPS.Puk)) {
 		KeyFromSeed(MSPPS);
 	}
 
 	return MSPPS;
 }
 
-// Sets the byte and base64 values from the Hex values.  Sets in place (no
-// return).
+/**
+ * SetMSPPSFromHex sets the byte and base64 values from the Hex values.
+ * Sets in place.
+ * 
+ * @param  {MSPPS} MSPPS
+ */
 async function SetMSPPSFromHex(MSPPS) {
-	console.log(MSPPS);
+	// console.log(MSPPS);
 	MSPPS.Sed64 = await HexTob64ut(MSPPS.SedHex);
 	MSPPS.Puk64 = await HexTob64ut(MSPPS.PukHex);
 	MSPPS.Kyp64 = await HexTob64ut(MSPPS.KypHex);
@@ -148,6 +183,11 @@ async function SetMSPPSFromHex(MSPPS) {
 	MSPPS.Sigb = await HexToUI8(MSPPS.SigHex);
 }
 
+/**
+ * SetGuiIn sets the input GUI.
+ * 
+ * @param  {MSPPS} MSPPS
+ */
 function SetGuiIn(MSPPS) {
 	if (KeyOptsElem.value === "Hex") {
 		Seed.value = MSPPS.SedHex;
@@ -162,6 +202,11 @@ function SetGuiIn(MSPPS) {
 	}
 }
 
+/**
+ * SetGuiOut sets the output GUI.
+ * 
+ * @param  {MSPPS} MSPPS
+ */
 async function SetGuiOut(MSPPS) {
 	document.getElementById('SedHex').textContent = MSPPS.SedHex;
 	document.getElementById('PukHex').textContent = MSPPS.PukHex;
@@ -173,8 +218,11 @@ async function SetGuiOut(MSPPS) {
 	document.getElementById('OSig64').textContent = MSPPS.Sig64;
 }
 
-
-// GenRadomGUI generates a random seed, private key, and public key. 
+/**
+ * GenRadomGUI generates a random seed, private key, and public key.
+ * 
+ * @returns  {void}
+ */
 async function GenRadomGUI() {
 	let MSPPS = {};
 	MSPPS.SedHex = await ArrayBufferToHex(await crypto.getRandomValues(new Uint8Array(32)));
@@ -210,16 +258,19 @@ async function KeyFromSeed(MSPPS) {
 	SetGuiOut(MSPPS);
 }
 
-
-// SignMsg Signs the current input message, depending on selected encoding method.
+/**
+ * Sign signs the current input message, depending on selected encoding method.
+ * 
+ * @returns  {void}
+ */
 async function Sign() {
 	try {
 		Signature.value = "";
 		var MSPPS = await GetMSPPS();
-		if (MSPPS.Sedb === undefined)  {
+		if (MSPPS.Sedb === undefined) {
 			throw new SyntaxError("Private key is empty.")
 		}
-		
+
 		MSPPS.SigHex = await ArrayBufferToHex(await window.nobleEd25519.sign(MSPPS.Msg, MSPPS.Sedb));
 		if (MSPPS.SigHex.length !== 128) { // Sanity check
 			throw new RangeError("Invalid Signature length")
@@ -234,8 +285,12 @@ async function Sign() {
 	SetGuiOut(MSPPS);
 }
 
-// Verifies the current signature with the current message and public key.
-// Populates "#AppMessage" fail/success/error messages.
+/**
+ * Verify verifies the current signature with the current message and public
+ * key. Populates "#AppMessage" fail/success/error messages.
+ * 
+ * @returns  {void}
+ */
 async function Verify() {
 	try {
 		let MSPPS = await GetMSPPS();
@@ -251,8 +306,11 @@ async function Verify() {
 	AppMessage.textContent = "✅ Valid Signature";
 }
 
-
-
+/**
+ * ClearAll clears all GUI fields.
+ * 
+ * @returns  {void}
+ */
 async function ClearAll() {
 	InputMsg.value = "";
 	Seed.value = "";
@@ -300,8 +358,8 @@ function URISafeToUnsafe(ub64) {
 /**
  * HexTob64ut is hex to "RFC 4648 URI Safe Truncated".  
  * 
- * @param   {string} hex    String. Hex representation.
- * @returns {string}        String. b64ut RFC 4648 URI safe truncated.
+ * @param   {string} hex    Hex representation.
+ * @returns {string}        b64ut RFC 4648 URI safe truncated.
  */
 async function HexTob64ut(hex) {
 	let ab = await HexToUI8(hex);
@@ -320,6 +378,7 @@ function URIUnsafeToSafe(ub64) {
 
 /**
  * base64t removes base64 padding if applicable.
+ * 
  * @param   {string} base64 
  * @returns {string} base64t
  */
@@ -331,7 +390,7 @@ function base64t(base64) {
  * ArrayBufferTo64ut Array buffer to b64ut.
  * 
  * @param   {ArrayBuffer}  buffer 
- * @returns {string}       String. base64ut.
+ * @returns {string}       base64ut.
  */
 function ArrayBufferTo64ut(buffer) {
 	var string = String.fromCharCode.apply(null, new Uint8Array(buffer));
@@ -342,8 +401,8 @@ function ArrayBufferTo64ut(buffer) {
 /**
  * HexToUI8 converts string Hex to UInt8Array. 
  * 
- * @param   {Hex}          Hex   String Hex. 
- * @returns {Uint8Array}        ArrayBuffer. 
+ * @param   {Hex}          Hex   String Hex.
+ * @returns {Uint8Array}         ArrayBuffer.
  */
 async function HexToUI8(hex) {
 	if (hex === undefined) { // undefined is different from 0 since 0 == "AA"
@@ -366,8 +425,8 @@ async function HexToUI8(hex) {
  * ArrayBufferToHex accepts an array buffer and returns a string of hex.
  * Taken from https://stackoverflow.com/a/50767210/1923095
  * 
- * @param {ArrayBuffer} buffer       str that is being converted to UTF8
- * @returns {string} hex             String with hex.  
+ * @param   {ArrayBuffer} buffer     Buffer that is being converted to UTF8
+ * @returns {string}                 String with hex.
  */
 async function ArrayBufferToHex(buffer) {
 	return [...new Uint8Array(buffer)].map(x => x.toString(16).padStart(2, "0")).join('').toUpperCase();
