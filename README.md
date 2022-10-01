@@ -4,7 +4,10 @@ Sign or Verify Messages using Ed25519
 
 Live demo: https://cyphr.me/ed25519_tool/ed.html
 
-## This tool can run locally and offline
+All functions are ran locally.  Nothing is sent or computed by a remote server (other than downloading the page itself).
+
+
+## This tool may be used offline and does not need an Internet connection
 
 `git clone` this project to a local directory.  
 
@@ -12,10 +15,12 @@ Live demo: https://cyphr.me/ed25519_tool/ed.html
 git clone https://github.com/Cyphrme/ed25519_tool.git
 ```
 
-Then, in your web browser, use `file://` to load `ed.html`
+Alternatively, download from [the release page](https://github.com/Cyphrme/ed25519_tool/releases).  Integrity checking may be done by comparing the digests on the release page, or use `git` which will integrity check
+
+Then navigate to `file://path_to_file/ed.html`.
 
 ```
-file:///pathToDirectory/ed.html
+file:///path_to_file/ed.html
 ```
 
 ## Signing and verification tool for Ed25519
