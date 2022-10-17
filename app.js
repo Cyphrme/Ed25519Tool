@@ -75,8 +75,7 @@ let EdFormOptions = [{
 
 // DOM load
 document.addEventListener('DOMContentLoaded', () => {
-	window.urlformjs.Init(EdFormOptions);
-	window.urlformjs.PopulateFromURI();
+	URLForm.PopulateFromURI(URLForm.Init(EdFormOptions));
 
 	InputMsg = document.getElementById('InputMsg');
 	MsgEncoding = document.getElementById('MsgEncoding');
