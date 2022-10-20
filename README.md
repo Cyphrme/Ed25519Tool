@@ -12,7 +12,8 @@ All functions are ran locally.  Nothing is sent or computed by a remote server (
 `git clone` this project to a local directory.  
 
 ```
-git clone https://github.com/Cyphrme/ed25519_tool.git
+git clone https://github.com/Cyphrme/ed25519_tool.git ed25519_tool
+cd ed25519_tool && git clone git@github.com:Cyphrme/URLFormJS.git urlformjs
 ```
 
 Alternatively, download from [the release page](https://github.com/Cyphrme/ed25519_tool/releases).  Integrity checking may be done by comparing the digests on the release page, or use `git` which will integrity check
@@ -25,11 +26,10 @@ file:///path_to_file/ed.html
 
 ## Signing and verification tool for Ed25519
 
-
 - Sign a message.
 - Verify a signature.
-- Generate a public key from seed.  
 - Generate a new random public/private key pair and seed.
+- Generate a public key from seed.  
 
 Supported formats:
 
