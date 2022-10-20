@@ -49,33 +49,36 @@ var Signature;
 var AppMessage;
 
 // URLFormJS sticky form
-let EdFormOptions = [{
-	"name": "msg",
-	"id": "InputMsg",
-}, {
-	"name": "msg_encoding",
-	"id": "MsgEncoding",
-}, {
-	"name": "msg_type",
-	"id": "EdType",
-}, {
-	"name": "key_encoding",
-	"id": "KeyOpts"
-}, {
-	"name": "seed",
-	"id": "Seed"
-}, {
-	"name": "key",
-	"id": "PublicKey"
-}, {
-	"name": "sig",
-	"id": "Signature"
-}, ];
+/**@type {FormOptions} */
+const FormOptions = {
+	"FormParameters": [{
+		"name": "msg",
+		"id": "InputMsg",
+	}, {
+		"name": "msg_encoding",
+		"id": "MsgEncoding",
+	}, {
+		"name": "msg_type",
+		"id": "EdType",
+	}, {
+		"name": "key_encoding",
+		"id": "KeyOpts"
+	}, {
+		"name": "seed",
+		"id": "Seed"
+	}, {
+		"name": "key",
+		"id": "PublicKey"
+	}, {
+		"name": "sig",
+		"id": "Signature"
+	}, ]
+};
 
 
 // DOM load
 document.addEventListener('DOMContentLoaded', () => {
-	URLForm.PopulateFromURI(URLForm.Init(EdFormOptions));
+	URLForm.Populate(URLForm.Init(FormOptions));
 
 	InputMsg = document.getElementById('InputMsg');
 	MsgEncoding = document.getElementById('MsgEncoding');
