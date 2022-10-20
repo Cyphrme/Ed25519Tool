@@ -38,6 +38,26 @@
  * @property {Uint8}    Sigb
  */
 
+
+var EmptyMSPPS = {
+	Msg: "",
+
+	SedHex: "",
+	PukHex: "",
+	KypHex: "",
+	SigHex: "",
+
+	Sed64: "",
+	Puk64: "",
+	Kyp64: "",
+	Sig64: "",
+
+	Sedb: "",
+	Pukb: "",
+	Kypb: "",
+	Sigb: "",
+}
+
 // GUI Element variables
 var InputMsg;
 var MsgEncoding;
@@ -78,7 +98,15 @@ const FormOptions = {
 
 // DOM load
 document.addEventListener('DOMContentLoaded', () => {
-	URLForm.Populate(URLForm.Init(FormOptions));
+	// If not wanting the URLFormJS dependency, encapsulate in a try/catch.
+	try {
+		URLForm.Populate(URLForm.Init(FormOptions));
+	} catch (e) {
+		console.info("Unable to start share button/share link (URLFormJS).  If this was suppose to work, see the docs on cloning `URLFormJS`.");
+		document.getElementById("shareArea").hidden = true;
+
+	}
+
 
 	InputMsg = document.getElementById('InputMsg');
 	MsgEncoding = document.getElementById('MsgEncoding');
@@ -320,10 +348,8 @@ async function ClearAll() {
 	Signature.value = "";
 	AppMessage.textContent = "";
 
-
-	let MSPPS = await GetMSPPS();
-	SetGuiIn(MSPPS);
-	SetGuiOut(MSPPS);
+	SetGuiIn(EmptyMSPPS);
+	SetGuiOut(EmptyMSPPS);
 }
 
 ////////////////////////////////

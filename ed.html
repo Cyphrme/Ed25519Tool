@@ -81,9 +81,7 @@
 					<option value="B64">base64</option>
 				</select>
 
-				<select
-					title="The pure option uses PureEdDSA without pre-hashing. The digest option uses HashEdDSA (Ed25519ph) and expects pre-hashed (SHA-512) digest."
-					name="EdType" id="EdType">
+				<select title="The pure option uses PureEdDSA without pre-hashing. The digest option uses HashEdDSA (Ed25519ph) and expects pre-hashed (SHA-512) digest." name="EdType" id="EdType">
 					<option value="Msg">Message ("pure")</option>
 					<option value="Dig">Digest ("ph")</option>
 				</select>
@@ -105,8 +103,11 @@
 
 		<p></p>
 		<div>
-			<button id="shareURLBtn" title="Share URL with current set values."> Share</button>
-			<span id="shareURL"></span>
+			<!-- Extra div for hide on URLFormJS failure-->
+			<div id="shareArea">
+				<button id="shareURLBtn" title="Share URL with current set values."> Share</button>
+				<span id="shareURL"></span>
+			</div>
 		</div>
 
 		<label for="KeyOpts">Key Encoding</label>
