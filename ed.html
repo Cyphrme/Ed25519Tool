@@ -45,11 +45,16 @@
 			font-size: 24px;
 		}
 
-
 		.footnote,
 		.footnote p,
-		.footnote a {
+		.footnote a,
+		.footnote li {
 			font-size: 16px;
+		}
+
+		#share1,
+		#share2 {
+			display: inline-block;
 		}
 
 		.grid-container {
@@ -92,21 +97,18 @@
 		<div>
 			<button id="SignBtn" title="Sign message using current seed.">🔏 Sign</button>
 			<button id="VerifyBtn" title="Verify message using signature and public key.">✅ Verify</button>
-			<span id="AppMessage"></span>
-			<br>
-			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲 Gen
-				Random</button>
-			<button class="item-4" title="Generates public key from given seed." id="GenKeyPairBtn">⚙️ Public Key from
-				Seed</button>
+			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲🔑 Gen Random</button>
 			<button id="ClearBtn" title="Reset the page and clear all boxes.">🚫 Clear all</button>
+			<br>
+			<span id="AppMessage"></span>
 		</div>
 
 		<p></p>
 		<div>
 			<!-- Extra div for hide on URLFormJS failure-->
 			<div id="shareArea">
-				<button id="shareURLBtn" title="Share URL with current set values."> Share</button>
-				<span id="shareURL"></span>
+				<div id="share1"><button id="shareURLBtn" title="Share URL with current set values."> Share</button></div>
+				<div id="share2"><span id="shareURL"></span></div>
 			</div>
 		</div>
 
@@ -122,9 +124,10 @@
 		<div>
 			<input type="text" id="Seed" size="64">
 		</div>
-		<label for="PublicKey">🔑 Public Key</label>
+		<label for="PublicKey">🔑 Public Key </label>
 		<div>
 			<input type="text" id="PublicKey" size="64">
+			<button class="item-4" title="Generates public key from given seed." id="GenKeyPairBtn">⚙️ Public Key from Seed</button>
 		</div>
 		<label for="Signature">✍️ Signature</label>
 		<div>
@@ -166,16 +169,15 @@
 		<ul>
 			<li><a href="https://github.com/Cyphrme/ed25519_tool">Source code on Github</a></li>
 			<li><a href="https://cyphr.me/ed25519_tool/ed.html">Live Demo (this page)</a></li>
-			<li><a href="https://cyphr.me">Sponsored by Cyphr.me</a></li>
 
 			<br>
-			<li><a href="https://convert.zamicol.com/?inAlph=base64&outAlph=Hex"> Convert Hex to base64 or base64 to Hex </a>
-			</li>
+			<li><a href="https://cyphr.me/coze_verifier_simple/coze.html">Simple Coze Verifier</a></li>
+			<li>Convert <a href="https://convert.zamicol.com/#?inAlph=Hex&outAlph=base64">Hex to base64</a> or <a href="https://convert.zamicol.com/?inAlph=base64&outAlph=Hex">base64 to Hex </a></li>
 			<li><a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a></li>
 			<li><a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </li>
 			<li><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a></li>
-			<li><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Mozilla blog, "How do Ed25519 keys
-					work?"</a></li>
+			<li><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Mozilla blog, "How do Ed25519 keys work?"</a></li>
+			<li><a href="https://cyphr.me">Sponsored by Cyphr.me</a></li>
 
 		</ul>
 	</div>
