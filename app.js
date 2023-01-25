@@ -39,7 +39,7 @@
  */
 
 
-var EmptyMSPPS = {
+const EmptyMSPPS = {
 	Msg: "",
 
 	SedHex: "",
@@ -58,15 +58,20 @@ var EmptyMSPPS = {
 	Sigb: "",
 }
 
+
+var KeyEncoding = "Hex"; // The current key encoding.  May be changed by "KeyEnc".
+
 // GUI Element variables
 var InputMsg;
 var MsgEncoding;
 var EdType;
-var KeyOptsElem;
+var KeyEnc;
 var Seed;
 var PublicKey;
 var Signature;
+var Kyp;
 var AppMessage;
+
 
 // URLFormJS sticky form
 /**@type {FormOptions} */
@@ -103,28 +108,30 @@ document.addEventListener('DOMContentLoaded', () => {
 		URLForm.Populate(URLForm.Init(FormOptions));
 	} catch (e) {
 		console.info("Unable to start share button/share link (URLFormJS).  If this was suppose to work, see the docs on cloning `URLFormJS`.");
-		document.getElementById("shareArea").hidden = true;
-
+		document.querySelectorAll('.shareElement').forEach(function(e) {
+			e.style.display = 'none';
+		});
 	}
-
 
 	InputMsg = document.getElementById('InputMsg');
 	MsgEncoding = document.getElementById('MsgEncoding');
 	EdType = document.getElementById('EdType');
-	KeyOptsElem = document.getElementById('KeyOpts');
+	KeyEnc = document.getElementById('KeyEnc');
 	Seed = document.getElementById('Seed');
 	PublicKey = document.getElementById('PublicKey');
 	Signature = document.getElementById('Signature');
+	Kyp = document.getElementById('Kyp');
 	AppMessage = document.getElementById('AppMessage');
-
 
 	// Set event listeners for buttons.
 	document.getElementById('GenRandKeyPairBtn').addEventListener('click', GenRadomGUI);
-	document.getElementById('GenKeyPairBtn').addEventListener('click', KeyFromSeed);
+	document.getElementById('GenKeyPairBtn').addEventListener('click', KeyFromSeedBtn);
 	document.getElementById('SignBtn').addEventListener('click', Sign);
 	document.getElementById('VerifyBtn').addEventListener('click', Verify);
 	document.getElementById('ClearBtn').addEventListener('click', ClearAll);
+	KeyEnc.addEventListener('change', ChangeKeyEncGui);
 });
+
 
 /**
  * GetMSPPS gets values from gui and returns MSPPS.
@@ -154,21 +161,23 @@ async function GetMSPPS() {
 
 	if (EdType.value === "Dig") {
 		// TODO, Support Ed25519ph
-		console.error("Ed25519ph is currently not supported.")
+		let err = "Ed25519ph is currently not supported.";
+		AppMessage.textContent = err;
+		throw new Error(err);
 	}
 
 	let Sed = Seed.value;
 	let Puk = PublicKey.value;
 	let Sig = Signature.value;
 
-	if (KeyOptsElem.value === "Hex") {
+	if (KeyEncoding === "Hex") {
 		MSPPS.SedHex = Sed;
 		MSPPS.PukHex = Puk;
 		MSPPS.KypHex = Sed + Puk;
 		MSPPS.SigHex = Sig;
 	}
 
-	if (KeyOptsElem.value === "B64") {
+	if (KeyEncoding === "B64") {
 		MSPPS.SedHex = B64ToHex(Sed);
 		MSPPS.PukHex = B64ToHex(Puk);
 		MSPPS.KypHex = B64ToHex(Sed) + B64ToHex(Puk);
@@ -186,13 +195,30 @@ async function GetMSPPS() {
 		}
 	}
 
-	await SetMSPPSFromHex(MSPPS);
-	if (isEmpty(MSPPS.Pukb)) {
-		KeyFromSeed(MSPPS);
+	try {
+		await SetMSPPSFromHex(MSPPS);
+		if (isEmpty(MSPPS.Pukb)) {
+			KeyFromSeed(MSPPS);
+		}
+	} catch (error) {
+		AppMessage.textContent = "❌ " + error;
+		return;
 	}
 
 	return MSPPS;
 }
+
+// Change key values, seed, public key, sig, and KeyPair, to Hex or B64 encoding
+// depending on Key Encoding.
+async function ChangeKeyEncGui() {
+	console.log("SetKeyEncGui");
+	let MSPPS = await GetMSPPS();
+
+	console.log(MSPPS);
+	KeyEncoding = KeyEnc.value;
+	SetGuiIn(MSPPS);
+}
+
 
 /**
  * SetMSPPSFromHex sets the byte and base64 values from the Hex values.
@@ -201,15 +227,16 @@ async function GetMSPPS() {
  * @param  {MSPPS} MSPPS
  */
 async function SetMSPPSFromHex(MSPPS) {
-	// console.log(MSPPS);
+	console.log(MSPPS);
 	MSPPS.Sed64 = await HexTob64ut(MSPPS.SedHex);
 	MSPPS.Puk64 = await HexTob64ut(MSPPS.PukHex);
-	MSPPS.Kyp64 = await HexTob64ut(MSPPS.KypHex);
 	MSPPS.Sig64 = await HexTob64ut(MSPPS.SigHex);
+	MSPPS.Kyp64 = await HexTob64ut(MSPPS.KypHex);
+
 	MSPPS.Sedb = await HexToUI8(MSPPS.SedHex);
 	MSPPS.Pukb = await HexToUI8(MSPPS.PukHex);
-	MSPPS.Kypb = await HexToUI8(MSPPS.KypHex);
 	MSPPS.Sigb = await HexToUI8(MSPPS.SigHex);
+	MSPPS.Kypb = await HexToUI8(MSPPS.KypHex);
 }
 
 /**
@@ -217,34 +244,21 @@ async function SetMSPPSFromHex(MSPPS) {
  * 
  * @param  {MSPPS} MSPPS
  */
-function SetGuiIn(MSPPS) {
-	if (KeyOptsElem.value === "Hex") {
+async function SetGuiIn(MSPPS) {
+	console.log(MSPPS);
+	if (KeyEncoding === "Hex") {
 		Seed.value = MSPPS.SedHex;
 		PublicKey.value = MSPPS.PukHex;
 		Signature.value = MSPPS.SigHex;
+		Kyp.textContent = MSPPS.KypHex;
 	}
 
-	if (KeyOptsElem.value === "B64") {
+	if (KeyEncoding === "B64") {
 		Seed.value = MSPPS.Sed64;
 		PublicKey.value = MSPPS.Puk64;
 		Signature.value = MSPPS.Sig64;
+		Kyp.textContent = MSPPS.Kyp64;
 	}
-}
-
-/**
- * SetGuiOut sets the output GUI.
- * 
- * @param  {MSPPS} MSPPS
- */
-async function SetGuiOut(MSPPS) {
-	document.getElementById('SedHex').textContent = MSPPS.SedHex;
-	document.getElementById('PukHex').textContent = MSPPS.PukHex;
-	document.getElementById('KypHex').textContent = MSPPS.KypHex;
-	document.getElementById('OSigHex').textContent = MSPPS.SigHex;
-	document.getElementById('Sed64').textContent = MSPPS.Sed64;
-	document.getElementById('Puk64').textContent = MSPPS.Puk64;
-	document.getElementById('Kyp64').textContent = MSPPS.Kyp64;
-	document.getElementById('OSig64').textContent = MSPPS.Sig64;
 }
 
 /**
@@ -253,39 +267,52 @@ async function SetGuiOut(MSPPS) {
  * @returns  {void}
  */
 async function GenRadomGUI() {
-	let MSPPS = {};
-	MSPPS.SedHex = await ArrayBufferToHex(await crypto.getRandomValues(new Uint8Array(32)));
-	MSPPS.SigHex = "";
 	AppMessage.textContent = "";
+
+	let MSPPS = {};
+	MSPPS.Sedb = await crypto.getRandomValues(new Uint8Array(32));
+	//await HexToUI8()
+	MSPPS.SedHex = await ArrayBufferToHex(MSPPS.Sedb);
+	let k = await window.nobleEd25519.utils.getExtendedPublicKey(MSPPS.Sedb);
+	MSPPS.PukHex = k.point.toHex().toUpperCase();
+	MSPPS.KypHex = MSPPS.SedHex + MSPPS.PukHex;
+	MSPPS.SigHex = "";
+
 	await SetMSPPSFromHex(MSPPS);
-	KeyFromSeed(MSPPS);
+	await SetGuiIn(MSPPS);
 }
 
 /**
- * KeyFromSeed gets from Gui and returns MSPPS
- * 
- * @param  {[MSPPS]} [MSPPS]    
+ * KeyFromSeed gets generates public key from MSPPS.Sedb.
  */
 async function KeyFromSeed(MSPPS) {
+	console.log("KeyFromSeed", MSPPS);
+
+	// Ed25519 uses the lower 32 bytes of SHA-512
+	// https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5
+	let k = await window.nobleEd25519.utils.getExtendedPublicKey(MSPPS.Sedb);
+	MSPPS.PukHex = k.point.toHex().toUpperCase();
+	MSPPS.KypHex = MSPPS.SedHex + MSPPS.PukHex;
+
+	MSPPS.Puk64 = await HexTob64ut(MSPPS.PukHex);
+	MSPPS.Kyp64 = await HexTob64ut(MSPPS.KypHex);
+}
+
+
+async function KeyFromSeedBtn() {
 	try {
 		AppMessage.textContent = "";
-		if (isEmpty(MSPPS.SedHex)) {
-			MSPPS = await GetMSPPS();
-		}
-		// Ed25519 uses the lower 32 bytes of SHA-512
-		// https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5
-		let k = await window.nobleEd25519.utils.getExtendedPublicKey(MSPPS.Sedb);
-		MSPPS.PukHex = k.point.toHex().toUpperCase();
-		MSPPS.KypHex = MSPPS.SedHex + MSPPS.PukHex;
+		MSPPS = await GetMSPPS();
+		KeyFromSeed(MSPPS)
+		SetGuiIn(MSPPS);
+
 	} catch (error) {
 		AppMessage.textContent = "❌ " + error;
 		return;
 	}
 
-	await SetMSPPSFromHex(MSPPS);
-	SetGuiIn(MSPPS);
-	SetGuiOut(MSPPS);
 }
+
 
 /**
  * Sign signs the current input message, depending on selected encoding method.
@@ -293,6 +320,7 @@ async function KeyFromSeed(MSPPS) {
  * @returns  {void}
  */
 async function Sign() {
+	AppMessage.textContent = "";
 	try {
 		Signature.value = "";
 		var MSPPS = await GetMSPPS();
@@ -311,7 +339,6 @@ async function Sign() {
 
 	MSPPS.Sig64 = await HexTob64ut(MSPPS.SigHex);
 	SetGuiIn(MSPPS);
-	SetGuiOut(MSPPS);
 }
 
 /**
@@ -321,6 +348,7 @@ async function Sign() {
  * @returns  {void}
  */
 async function Verify() {
+	AppMessage.textContent = "";
 	try {
 		let MSPPS = await GetMSPPS();
 		var valid = await window.nobleEd25519.verify(MSPPS.Sigb, MSPPS.Msg, MSPPS.Pukb);
@@ -348,7 +376,6 @@ async function ClearAll() {
 	AppMessage.textContent = "";
 
 	SetGuiIn(EmptyMSPPS);
-	SetGuiOut(EmptyMSPPS);
 }
 
 ////////////////////////////////

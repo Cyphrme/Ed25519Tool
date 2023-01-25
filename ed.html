@@ -103,64 +103,45 @@
 			<span id="AppMessage"></span>
 		</div>
 
-		<p></p>
-		<div>
-			<!-- Extra div for hide on URLFormJS failure-->
-			<div id="shareArea">
-				<div id="share1"><button id="shareURLBtn" title="Share URL with current set values."> Share</button></div>
-				<div id="share2"><span id="shareURL"></span></div>
-			</div>
-		</div>
 
-		<label for="KeyOpts">Key Encoding</label>
+		<label for="KeyEnc">Key Encoding</label>
 		<div>
-			<select name="KeyOpts" id="KeyOpts" title="Encoding of Input Key">
+			<select name="KeyEnc" id="KeyEnc" title="Key Encoding">
 				<option value="Hex">Hex</option>
 				<option value="B64">base64</option>
 			</select>
-
 		</div>
+
 		<label for="Seed">🌱 Seed (Private Key)</label>
 		<div>
 			<input type="text" id="Seed" size="64">
 		</div>
+
 		<label for="PublicKey">🔑 Public Key </label>
 		<div>
 			<input type="text" id="PublicKey" size="64">
 			<button class="item-4" title="Generates public key from given seed." id="GenKeyPairBtn">⚙️ Public Key from Seed</button>
 		</div>
+
 		<label for="Signature">✍️ Signature</label>
 		<div>
 			<input type="text" id="Signature" size="128">
 		</div>
 
-		<div class="grid-container">
-			Hex Seed:<span id="SedHex"></span>
-			Hex Seed || Public:<span id="KypHex"></span>
-			base64 Seed:<span id="Sed64"></span>
-			base64 Seed || Public:<span id="Kyp64"></span>
+
+		<label>Seed || Public:</label>
+		<div><span id="Kyp"></span>
 		</div>
+
+		<div id="share1" class="shareElement"><button id="shareURLBtn" title="Share URL with current set values."> Share</button></div>
+		<div id="share2" class="shareElement"><span id="shareURL"></span></div>
+
+
+
 	</div>
 
 	<br>
 	<br>
-
-	<hr>
-	<h2>Output</h2>
-
-
-	<div class="grid-container">
-		Hex Public Key:
-		<span id="PukHex"></span>
-		Hex Signature:
-		<span id="OSigHex"></span>
-
-		base64 Public Key:
-		<span id="Puk64"></span>
-		base64 Signature:
-		<span id="OSig64"></span>
-	</div>
-
 	<br>
 	<br>
 
