@@ -175,20 +175,19 @@ async function GetMSPPS() {
 		MSPPS.SigHex = B64ToHex(Sig);
 	}
 
-	if (isEmpty(MSPPS.SedHex)) {
-		throw new SyntaxError("Private key is empty.")
-	}
-	if (MSPPS.SedHex.length == 128) {
-		// Check if seed/private key is 64 bytes.  If so, assume `seed || public key`
-		// and discard given public key.  
-		MSPPS.SedHex = MSPPS.SedHex.slice(0, 64);
-	}
-	if (MSPPS.SedHex.length !== 64) {
-		throw new SyntaxError("Seed is not 32 bytes.")
+	if (!isEmpty(MSPPS.SedHex)) {
+		if (MSPPS.SedHex.length == 128) {
+			// Check if seed/private key is 64 bytes.  If so, assume `seed || public key`
+			// and discard given public key.  
+			MSPPS.SedHex = MSPPS.SedHex.slice(0, 64);
+		}
+		if (MSPPS.SedHex.length !== 64) {
+			throw new SyntaxError("Seed is not 32 bytes.")
+		}
 	}
 
 	await SetMSPPSFromHex(MSPPS);
-	if (isEmpty(MSPPS.Puk)) {
+	if (isEmpty(MSPPS.Pukb)) {
 		KeyFromSeed(MSPPS);
 	}
 
