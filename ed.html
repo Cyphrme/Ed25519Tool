@@ -70,9 +70,6 @@
 	<h1>Ed25519 Online Tool - Sign or Verify</h1>
 	<h3> This tool may be used offline and does not transmit keys. Key generation is done locally in browser. </h3>
 	<hr>
-	<h2>Input</h2>
-
-
 
 	<div class="grid-container">
 		<label for="InputMsg">✉️ Message</label>
@@ -93,15 +90,7 @@
 			</label>
 		</div>
 
-		<p></p>
-		<div>
-			<button id="SignBtn" title="Sign message using current seed.">🔏 Sign</button>
-			<button id="VerifyBtn" title="Verify message using signature and public key.">✅ Verify</button>
-			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲🔑 Gen Random</button>
-			<button id="ClearBtn" title="Reset the page and clear all boxes.">🚫 Clear all</button>
-			<br>
-			<span id="AppMessage"></span>
-		</div>
+
 
 
 		<label for="KeyEnc">Key Encoding</label>
@@ -128,22 +117,31 @@
 			<input type="text" id="Signature" size="128">
 		</div>
 
+		<p></p>
+		<div>
+			<button id="SignBtn" title="Sign message using current seed.">🔏 Sign</button>
+			<button id="VerifyBtn" title="Verify message using signature and public key.">✅ Verify</button>
+			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲🔑 Gen Random</button>
+			<button id="ClearBtn" title="Reset the page and clear all boxes.">🚫 Clear all</button>
+			<br>
+			<span id="AppMessage"></span>
+		</div>
 
+
+		<p></p>
+		<p></p>
 		<label>Seed || Public:</label>
 		<div><span id="Kyp"></span>
 		</div>
 
-		<div id="share1" class="shareElement"><button id="shareURLBtn" title="Share URL with current set values."> Share</button></div>
+		<div id="share1" class="shareElement"><button id="shareURLBtn" title="Generate a share URL with current values.">🔗 Share</button></div>
 		<div id="share2" class="shareElement"><span id="shareURL"></span></div>
 
 
 
 	</div>
 
-	<br>
-	<br>
-	<br>
-	<br>
+
 
 	<hr>
 	<div class="footnote">
