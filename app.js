@@ -302,15 +302,13 @@ async function KeyFromSeed(MSPPS) {
 async function KeyFromSeedBtn() {
 	try {
 		AppMessage.textContent = "";
-		MSPPS = await GetMSPPS();
-		KeyFromSeed(MSPPS)
+		let MSPPS = await GetMSPPS();
+		await KeyFromSeed(MSPPS)
 		SetGuiIn(MSPPS);
-
 	} catch (error) {
 		AppMessage.textContent = "❌ " + error;
 		return;
 	}
-
 }
 
 
