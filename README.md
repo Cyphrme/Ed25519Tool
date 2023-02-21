@@ -24,35 +24,23 @@ Then navigate to `file://path_to_file/ed.html`.
 file:///path_to_file/ed.html
 ```
 
-## Signing and verification tool for Ed25519
-
-- Sign a message.
-- Verify a signature.
-- Generate a new random public/private key pair and seed.
-- Generate a public key from seed.  
-
-Supported formats:
-
-Messages: Base64, Hex, and Text (Bytes).
-Keys:     Base64 and Hex.
-
-
-
 # Naming Differences in Implementations
 Many libraries, including this tool, refer to what the RFC calls "private key"
 as the "seed" (like [Go ](https://pkg.go.dev/crypto/ed25519)). The 32 byte seed
 is used to generate the private component "secret scalar s" (sss), the public
 key, and the "prefix" (nounce).
 
-The ["actual" private component](https://github.com/paulmillr/noble-ed25519/blob/ffdc7026d70297754a825f6e991426188891d1de/index.ts#L903)
-(secret scalar s as [named by the RFC (Section 5.1.5.3))](https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5") is typically
-regenerated from seed on signing, although it is possible to use sss and prefix
-to sign without the seed. The public component is computed from sss, but prefix
-  is generated from seed and is used for signing. NaCL used to return the
-[private key as sss concatenated with prefix
+The ["actual" private
+component](https://github.com/paulmillr/noble-ed25519/blob/ffdc7026d70297754a825f6e991426188891d1de/index.ts#L903)
+(secret scalar s as [named by the RFC (Section
+5.1.5.3))](https://datatracker.ietf.org/doc/html/rfc8032#section-5.1.5") is
+typically regenerated from seed on signing, although it is possible to use sss
+and prefix to sign without the seed. The public component is computed from sss,
+but prefix is generated from seed and is used for signing. For example, NaCL, in
+the past, returned the [private key as sss concatenated with prefix
 ](https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/#:~:text=%20is%20the%20private%20scalar).
 
-Instead of requiring sss and prefix for signing, most libraries required seed
+Instead of requiring sss and prefix for signing, most libraries require the seed
 and regenerate both sss and prefix from seed, and optionally cache the public
 key since caching the public key precludes relatively slow regeneration when
 signing.  What some libraries call the "private key" (64 bytes) is the seed (32
@@ -75,7 +63,7 @@ input as well.  See https://github.com/paulmillr/noble-ed25519/issues/64.  It
 would require additional code to Noble since sss || prefix is not a possible
 input, assuming seed is not given.  
 
-We  might never do this if there's no use for it among all modern tools.  
+We  might never do this if there's no use for it among modern tools.  
 
 
 # Dist
