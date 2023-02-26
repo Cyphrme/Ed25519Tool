@@ -60,11 +60,12 @@ const EmptyMSPPS = {
 
 
 var KeyEncoding = "Hex"; // The current key encoding.  May be changed by "KeyEnc".
+var AppMsgEmpty = "---";
 
 // GUI Element variables
 var InputMsg;
 var MsgEncoding;
-var EdType;
+var AlgType;
 var KeyEnc;
 var Seed;
 var PublicKey;
@@ -84,7 +85,7 @@ const FormOptions = {
 		"id": "MsgEncoding",
 	}, {
 		"name": "msg_type",
-		"id": "EdType",
+		"id": "AlgType",
 	}, {
 		"name": "key_encoding",
 		"id": "KeyOpts"
@@ -115,13 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	InputMsg = document.getElementById('InputMsg');
 	MsgEncoding = document.getElementById('MsgEncoding');
-	EdType = document.getElementById('EdType');
+	AlgType = document.getElementById('AlgType');
 	KeyEnc = document.getElementById('KeyEnc');
 	Seed = document.getElementById('Seed');
 	PublicKey = document.getElementById('PublicKey');
 	Signature = document.getElementById('Signature');
 	Kyp = document.getElementById('Kyp');
 	AppMessage = document.getElementById('AppMessage');
+	AppMessage.textContent  = AppMsgEmpty;
 
 	// Set event listeners for buttons.
 	document.getElementById('GenRandKeyPairBtn').addEventListener('click', GenRadomGUI);
@@ -159,7 +161,7 @@ async function GetMSPPS() {
 			return null;
 	}
 
-	if (EdType.value === "Dig") {
+	if (AlgType.value === "Dig") {
 		// TODO, Support Ed25519ph
 		let err = "Ed25519ph is currently not supported.";
 		AppMessage.textContent = err;
@@ -267,7 +269,7 @@ async function SetGuiIn(MSPPS) {
  * @returns  {void}
  */
 async function GenRadomGUI() {
-	AppMessage.textContent = "";
+	AppMessage.textContent = AppMsgEmpty;
 
 	let MSPPS = {};
 	MSPPS.Sedb = await crypto.getRandomValues(new Uint8Array(32));
@@ -301,7 +303,7 @@ async function KeyFromSeed(MSPPS) {
 
 async function KeyFromSeedBtn() {
 	try {
-		AppMessage.textContent = "";
+		AppMessage.textContent = AppMsgEmpty;
 		let MSPPS = await GetMSPPS();
 		await KeyFromSeed(MSPPS)
 		SetGuiIn(MSPPS);
@@ -318,7 +320,7 @@ async function KeyFromSeedBtn() {
  * @returns  {void}
  */
 async function Sign() {
-	AppMessage.textContent = "";
+	AppMessage.textContent = AppMsgEmpty;
 	try {
 		Signature.value = "";
 		var MSPPS = await GetMSPPS();
@@ -336,7 +338,8 @@ async function Sign() {
 	}
 
 	MSPPS.Sig64 = await HexTob64ut(MSPPS.SigHex);
-	SetGuiIn(MSPPS);
+	await SetGuiIn(MSPPS);
+	Verify();
 }
 
 /**
@@ -346,7 +349,7 @@ async function Sign() {
  * @returns  {void}
  */
 async function Verify() {
-	AppMessage.textContent = "";
+	AppMessage.textContent = AppMsgEmpty;
 	try {
 		let MSPPS = await GetMSPPS();
 		var valid = await window.nobleEd25519.verify(MSPPS.Sigb, MSPPS.Msg, MSPPS.Pukb);
@@ -371,7 +374,7 @@ async function ClearAll() {
 	Seed.value = "";
 	PublicKey.value = "";
 	Signature.value = "";
-	AppMessage.textContent = "";
+	AppMessage.textContent = AppMsgEmpty;
 
 	SetGuiIn(EmptyMSPPS);
 }

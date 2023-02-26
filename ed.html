@@ -67,28 +67,36 @@
 </head>
 
 <body>
-	<h1>Ed25519 Online Tool - Sign or Verify</h1>
+	<h1>Ed25519 Online Tool - Sign, Verify, and Generate</h1>
 	<h3> This tool may be used offline and does not transmit keys. Key generation is done locally in browser. </h3>
 	<hr>
 
 	<div class="grid-container">
+		<label for="EdType">Algorithm</label>
+		<div>
+			<select title='Ed25519 uses "PureEdDSA" without pre-hashing. Ed25519ph uses "HashEdDSA" and expects input to be a digest (SHA-512).' name="AlgType" id="AlgType">
+				<option value="Msg">Ed25519</option>
+				<option value="Dig">Ed25519ph</option>
+			</select>
+		</div>
+
+
 		<label for="InputMsg">✉️ Message</label>
 		<div>
-			<textarea name="InputMsg" id="InputMsg" cols="50" rows="4"></textarea>
-			<br>
-			<label for="InputMsg">
-				<select title="Encoding of input message" name="MsgEncoding" id="MsgEncoding">
-					<option value="Text">Text (UTF-8)</option>
-					<option value="Hex">Hex</option>
-					<option value="B64">base64</option>
-				</select>
-
-				<select title="The pure option uses PureEdDSA without pre-hashing. The digest option uses HashEdDSA (Ed25519ph) and expects pre-hashed (SHA-512) digest." name="EdType" id="EdType">
-					<option value="Msg">Message ("pure")</option>
-					<option value="Dig">Digest ("ph")</option>
-				</select>
-			</label>
+			<textarea name="InputMsg" id="InputMsg" cols="64" rows="4"></textarea>
 		</div>
+
+		<label for="EdType">Msg Encoding</label>
+		<div>
+			<select title="Encoding of input message" name="MsgEncoding" id="MsgEncoding">
+				<option value="Text">Text (UTF-8)</option>
+				<option value="Hex">Hex</option>
+				<option value="B64">base64</option>
+			</select>
+
+		</div>
+
+
 
 
 
@@ -104,6 +112,7 @@
 		<label for="Seed">🌱 Seed (Private Key)</label>
 		<div>
 			<input type="text" id="Seed" size="64">
+			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲🔑 Generate Random Key</button>
 		</div>
 
 		<label for="PublicKey">🔑 Public Key </label>
@@ -121,19 +130,20 @@
 		<div>
 			<button id="SignBtn" title="Sign message using current seed.">🔏 Sign</button>
 			<button id="VerifyBtn" title="Verify message using signature and public key.">✅ Verify</button>
-			<button class="item-3" title="Generates a random seed and public key." id="GenRandKeyPairBtn">🎲🔑 Gen Random</button>
 			<button id="ClearBtn" title="Reset the page and clear all boxes.">🚫 Clear all</button>
-			<br>
-			<span id="AppMessage"></span>
 		</div>
 
+		<label for="PublicKey">Valid: </label>
+		<div><span id="AppMessage">❌ Javascript must be enabled for this tool to work.  </span></div>
 
-		<p></p>
-		<p></p>
-		<label>Seed || Public:</label>
+	</div>
+	<br>
+	<hr>
+	<p><strong>Meta</strong></p>
+	<div class="grid-container">
+		<label>Seed || Public</label>
 		<div><span id="Kyp"></span>
 		</div>
-
 		<div id="share1" class="shareElement"><button id="shareURLBtn" title="Generate a share URL with current values.">🔗 Share</button></div>
 		<div id="share2" class="shareElement"><span id="shareURL"></span></div>
 
