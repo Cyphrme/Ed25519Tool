@@ -4,6 +4,8 @@ Sign or Verify Messages using Ed25519
 
 Live demo: https://cyphr.me/ed25519_tool/ed.html
 
+Also, [Github hosted copy](https://cyphrme.github.io/ed25519_tool/ed.html)
+
 All functions are ran locally.  Nothing is sent or computed by a remote server (other than downloading the page itself).
 
 
