@@ -1,41 +1,42 @@
 "use strict";
 
 /**
- * MSPPS holds the GUI values for the message, seed, key, and signature.
- * 
- * - Msg:      Msg in bytes, UTF-8 if relevant.
- * 
- * - SedHex:   Seed Hex.
- * - PubHex:   Public Key Hex.
- * - KypHex:   (Key Pair) Seed || Public Key.
- * - SigHex:   Signature Hex.
- * 
- * - Sed64:    Seed b64.
- * - Puk64:    Public Key b64.
- * - Kyp64:    (Key Pair) Seed || Public Key.  
- * - Sig64:    Signature b64.
- * 
- * - Sedb:     Seed bytes.
- * - Pukb:     Public Key
- * - Kypb:     (Key Pair) Seed || Public Key.  
- * - Sigb:     Signature.
- * @typedef  {{}}       MSPPS
- * @property {Uint8}    Msg
- * 
- * @property {Hex}      SedHex
- * @property {Hex}      PukHex 
- * @property {Hex}      KypHex
- * @property {Hex}      SigHex
- * 
- * @property {b64}      Sed64
- * @property {b64}      Puk64
- * @property {b64}      Kyp64
- * @property {b64}      Sig64
- * 
- * @property {Uint8}    Sedb
- * @property {Uint8}    Pukb
- * @property {Uint8}    Kypb
- * @property {Uint8}    Sigb
+MSPPS holds the GUI values for the message, seed, key, and signature.
+
+Msg:      Msg in bytes, UTF-8 if relevant.
+
+SedHex:   Seed Hex.
+PubHex:   Public Key Hex.
+KypHex:   (Key Pair) Seed || Public Key.
+SigHex:   Signature Hex.
+
+Sed64:    Seed b64.
+Puk64:    Public Key b64.
+Kyp64:    (Key Pair) Seed || Public Key.  
+Sig64:    Signature b64.
+
+Sedb:     Seed bytes.
+Pukb:     Public Key
+Kypb:     (Key Pair) Seed || Public Key.  
+Sigb:     Signature.
+
+@typedef  {{}}       MSPPS
+@property {Uint8}    Msg
+
+@property {Hex}      SedHex
+@property {Hex}      PukHex 
+@property {Hex}      KypHex
+@property {Hex}      SigHex
+
+@property {b64}      Sed64
+@property {b64}      Puk64
+@property {b64}      Kyp64
+@property {b64}      Sig64
+
+@property {Uint8}    Sedb
+@property {Uint8}    Pukb
+@property {Uint8}    Kypb
+@property {Uint8}    Sigb
  */
 
 
@@ -58,12 +59,15 @@ const EmptyMSPPS = {
 	Sigb: "",
 }
 
-const AppMsgEmpty = "---";
+const AppMsgEmpty = "---"
+// Variable for encoding change.  
+var CurrentKeyEnc
+var InitedFormOptions
 
 // GUI Element variables
+var AlgType;
 var InputMsg;
 var MsgEnc;
-var AlgType;
 var KeyEnc;
 var Seed;
 var PublicKey;
@@ -76,69 +80,85 @@ var AppMessage;
 /**@type {FormOptions} */
 const FormOptions = {
 	"FormParameters": [{
-		"name": "msg",
-		"id": "InputMsg",
-	}, {
-		"name": "msg_encoding",
-		"id": "MsgEnc",
-	}, {
-		"name": "msg_type",
-		"id": "AlgType",
-	}, {
-		"name": "key_encoding",
-		"id": "KeyEnc",
-	}, {
-		"name": "seed",
-		"id": "Seed",
-	}, {
-		"name": "key",
-		"id": "PublicKey",
-	}, {
-		"name": "sig",
-		"id": "Signature",
-	}, ]
+			"name": "alg_type",
+			"id": "AlgType",
+		}, {
+			"name": "msg_enc",
+			"id": "MsgEnc",
+		}, {
+			"name": "msg",
+			"id": "InputMsg",
+		}, {
+			"name": "key_enc",
+			"id": "KeyEnc",
+		}, {
+			"name": "seed",
+			"id": "Seed",
+		}, {
+			"name": "key",
+			"id": "PublicKey",
+		}, {
+			"name": "sig",
+			"id": "Signature",
+		},
+		// Non-GUI options
+		{
+			"name": "verify",
+			"type": "bool",
+			//"nonFormValue": true,
+			"funcTrue": async function() {
+				CurrentKeyEnc = KeyEnc.value;
+				Verify();
+			},
+		},
+
+	]
 };
 
 
 // DOM load
 document.addEventListener('DOMContentLoaded', async () => {
-	// If not wanting the URLFormJS dependency, encapsulate in a try/catch.
-	try {
-		await URLForm.Populate(URLForm.Init(FormOptions));
-	} catch (e) {
-		console.info("Unable to start share button/share link (URLFormJS).  If this was suppose to work, see the docs on cloning `URLFormJS`.");
-		document.querySelectorAll('.shareElement').forEach(function(e) {
-			e.style.display = 'none';
-		});
-	}
-
+	// Grab GUI elements into variables. 
+	AlgType = document.getElementById('AlgType');
 	InputMsg = document.getElementById('InputMsg');
 	MsgEnc = document.getElementById('MsgEnc');
-	
-	AlgType = document.getElementById('AlgType');
 	KeyEnc = document.getElementById('KeyEnc');
 	Seed = document.getElementById('Seed');
 	PublicKey = document.getElementById('PublicKey');
 	Signature = document.getElementById('Signature');
 	Kyp = document.getElementById('Kyp');
 	AppMessage = document.getElementById('AppMessage');
-	AppMessage.textContent  = AppMsgEmpty;
 
+	// ShareURL is encapsulate in a try/catch so the dependency is not required for functionality.  
+	try {
+
+		InitedFormOptions = await URLForm.Init(FormOptions)
+		await URLForm.Populate(InitedFormOptions);
+	} catch (e) {
+		console.info("Unable to start share button/share link (URLFormJS).  If this was suppose to work, see the docs on cloning `URLFormJS`.");
+		document.querySelectorAll('.shareElement').forEach(function(e) {
+			e.style.display = 'none';
+		});
+	}
+	
+	// Initialize 
+	AppMessage.textContent = AppMsgEmpty;
+	CurrentKeyEnc = KeyEnc.value; // Ensure key current encoding matches GUI after ShareURL may have set it.  
 
 	// Set event listeners for buttons.
 	document.getElementById('GenRandKeyPairBtn').addEventListener('click', GenRadomGUI);
-	document.getElementById('GenKeyPairBtn').addEventListener('click', KeyFromSeedBtn);
+	document.getElementById('GenKeyFromSeedBtn').addEventListener('click', KeyFromSeedBtn);
 	document.getElementById('SignBtn').addEventListener('click', Sign);
 	document.getElementById('VerifyBtn').addEventListener('click', Verify);
 	document.getElementById('ClearBtn').addEventListener('click', ClearAll);
 	KeyEnc.addEventListener('change', ChangeKeyEncGui);
+
 });
 
 
 /**
- * GetMSPPS gets values from gui and returns MSPPS.
- * 
- * @returns  {MSPPS}        
+GetMSPPS gets values from gui and returns MSPPS.
+@returns  {MSPPS}        
  */
 async function GetMSPPS() {
 	/** @type {MSPPS} */
@@ -172,22 +192,17 @@ async function GetMSPPS() {
 	let Puk = PublicKey.value;
 	let Sig = Signature.value;
 
-	if (KeyEnc.value === "Hex") {
+	if (CurrentKeyEnc === "Hex") {
 		MSPPS.SedHex = Sed;
 		MSPPS.PukHex = Puk;
 		MSPPS.KypHex = Sed + Puk;
 		MSPPS.SigHex = Sig;
-	}
-	console.log("Bob", KeyEnc.value)
-
-	if (KeyEnc.value === "B64") {
+	} else if (CurrentKeyEnc === "B64") {
 		MSPPS.SedHex = B64ToHex(Sed);
 		MSPPS.PukHex = B64ToHex(Puk);
 		MSPPS.KypHex = B64ToHex(Sed) + B64ToHex(Puk);
 		MSPPS.SigHex = B64ToHex(Sig);
 	}
-
-	console.log("Bob2", MSPPS)
 
 	if (!isEmpty(MSPPS.SedHex)) {
 		if (MSPPS.SedHex.length == 128) {
@@ -215,13 +230,12 @@ async function GetMSPPS() {
 
 
 /**
- * SetMSPPSFromHex sets the byte and base64 values from the Hex values.
- * Sets in place.
- * 
- * @param  {MSPPS} MSPPS
+SetMSPPSFromHex sets the byte and base64 values from the Hex values.
+Sets in place.
+@param  {MSPPS} MSPPS
  */
 async function SetMSPPSFromHex(MSPPS) {
-	console.log(MSPPS);
+	//console.log(MSPPS);
 	MSPPS.Sed64 = await HexTob64ut(MSPPS.SedHex);
 	MSPPS.Puk64 = await HexTob64ut(MSPPS.PukHex);
 	MSPPS.Sig64 = await HexTob64ut(MSPPS.SigHex);
@@ -236,14 +250,16 @@ async function SetMSPPSFromHex(MSPPS) {
 // Change key values, seed, public key, sig, and KeyPair, to Hex or B64 encoding
 // depending on Key Encoding.
 async function ChangeKeyEncGui() {
+	console.log("ChangeKeyEncGui", CurrentKeyEnc, KeyEnc.value)
 	let MSPPS = await GetMSPPS();
-	SetGuiIn(MSPPS);
+	await SetGuiIn(MSPPS);
+	CurrentKeyEnc = KeyEnc.value
 }
 
 /**
- * SetGuiIn sets the input GUI.
- * 
- * @param  {MSPPS} MSPPS
+SetGuiIn sets the input GUI.
+
+@param  {MSPPS} MSPPS
  */
 async function SetGuiIn(MSPPS) {
 	console.log(MSPPS);
@@ -263,9 +279,8 @@ async function SetGuiIn(MSPPS) {
 }
 
 /**
- * GenRadomGUI generates a random seed, private key, and public key.
- * 
- * @returns  {void}
+GenRadomGUI generates a random seed, private key, and public key.
+@returns  {void}
  */
 async function GenRadomGUI() {
 	AppMessage.textContent = AppMsgEmpty;
@@ -284,7 +299,7 @@ async function GenRadomGUI() {
 }
 
 /**
- * KeyFromSeed gets generates public key from MSPPS.Sedb.
+KeyFromSeed gets generates public key from MSPPS.Sedb.
  */
 async function KeyFromSeed(MSPPS) {
 	console.log("KeyFromSeed", MSPPS);
@@ -314,9 +329,8 @@ async function KeyFromSeedBtn() {
 
 
 /**
- * Sign signs the current input message, depending on selected encoding method.
- * 
- * @returns  {void}
+Sign signs the current input message, depending on selected encoding method.
+@returns  {void}
  */
 async function Sign() {
 	AppMessage.textContent = AppMsgEmpty;
@@ -342,15 +356,16 @@ async function Sign() {
 }
 
 /**
- * Verify verifies the current signature with the current message and public
- * key. Populates "#AppMessage" fail/success/error messages.
- * 
- * @returns  {void}
+Verify verifies the current signature with the current message and public
+key. Populates "#AppMessage" fail/success/error messages.
+@returns  {void}
  */
 async function Verify() {
+
 	AppMessage.textContent = AppMsgEmpty;
 	try {
 		let MSPPS = await GetMSPPS();
+		console.log("Verify", MSPPS)
 		var valid = await window.nobleEd25519.verify(MSPPS.Sigb, MSPPS.Msg, MSPPS.Pukb);
 	} catch (error) {
 		console.error(error);
@@ -364,9 +379,8 @@ async function Verify() {
 }
 
 /**
- * ClearAll clears all GUI fields.
- * 
- * @returns  {void}
+ClearAll clears all GUI fields.
+@returns  {void}
  */
 async function ClearAll() {
 	InputMsg.value = "";
@@ -374,6 +388,7 @@ async function ClearAll() {
 	PublicKey.value = "";
 	Signature.value = "";
 	AppMessage.textContent = AppMsgEmpty;
+	URLForm.Clear(InitedFormOptions)
 
 	SetGuiIn(EmptyMSPPS);
 }
@@ -383,10 +398,9 @@ async function ClearAll() {
 ////////////////////////////////
 
 /**
- * B64ToHex takes any RFC 4648 base64 to Hex.
- * 
- * @param    {string} b64        RFC 4648 any base64.
- * @returns  {string}            Hex representation.
+B64ToHex takes any RFC 4648 base64 to Hex.
+@param    {string} b64        RFC 4648 any base64.
+@returns  {string}            Hex representation.
  */
 function B64ToHex(b64) {
 	let ub64 = URISafeToUnsafe(b64);
@@ -400,20 +414,18 @@ function B64ToHex(b64) {
 };
 
 /**
- * URISafeToUnsafe converts any URI safe string to URI unsafe.  
- * 
- * @param   {string} b64ut 
- * @returns {string} ub64t
+URISafeToUnsafe converts any URI safe string to URI unsafe.  
+@param   {string} b64ut 
+@returns {string} ub64t
  */
 function URISafeToUnsafe(ub64) {
 	return ub64.replace(/-/g, '+').replace(/_/g, '/');
 };
 
 /**
- * HexTob64ut is hex to "RFC 4648 URI Safe Truncated".  
- * 
- * @param   {string} hex    Hex representation.
- * @returns {string}        b64ut RFC 4648 URI safe truncated.
+HexTob64ut is hex to "RFC 4648 URI Safe Truncated".  
+@param   {string} hex    Hex representation.
+@returns {string}        b64ut RFC 4648 URI safe truncated.
  */
 async function HexTob64ut(hex) {
 	let ab = await HexToUI8(hex);
@@ -421,30 +433,27 @@ async function HexTob64ut(hex) {
 };
 
 /**
- * URIUnsafeToSafe converts any URI unsafe string to URI safe.  
- * 
- * @param   {string} ub64t 
- * @returns {string} b64ut 
+URIUnsafeToSafe converts any URI unsafe string to URI safe.  
+@param   {string} ub64t 
+@returns {string} b64ut 
  */
 function URIUnsafeToSafe(ub64) {
 	return ub64.replace(/\+/g, '-').replace(/\//g, '_');
 };
 
 /**
- * base64t removes base64 padding if applicable.
- * 
- * @param   {string} base64 
- * @returns {string} base64t
+base64t removes base64 padding if applicable.
+@param   {string} base64 
+@returns {string} base64t
  */
 function base64t(base64) {
 	return base64.replace(/=/g, '');
 }
 
 /**
- * ArrayBufferTo64ut Array buffer to b64ut.
- * 
- * @param   {ArrayBuffer}  buffer 
- * @returns {string}       base64ut.
+ArrayBufferTo64ut Array buffer to b64ut.
+@param   {ArrayBuffer}  buffer 
+@returns {string}       base64ut.
  */
 function ArrayBufferTo64ut(buffer) {
 	var string = String.fromCharCode.apply(null, new Uint8Array(buffer));
@@ -453,10 +462,9 @@ function ArrayBufferTo64ut(buffer) {
 
 
 /**
- * HexToUI8 converts string Hex to UInt8Array. 
- * 
- * @param   {Hex}          Hex   String Hex.
- * @returns {Uint8Array}         ArrayBuffer.
+HexToUI8 converts string Hex to UInt8Array. 
+@param   {Hex}          Hex   String Hex.
+@returns {Uint8Array}         ArrayBuffer.
  */
 async function HexToUI8(hex) {
 	if (hex === undefined) { // undefined is different from 0 since 0 == "AA"
@@ -476,11 +484,10 @@ async function HexToUI8(hex) {
 };
 
 /**
- * ArrayBufferToHex accepts an array buffer and returns a string of hex.
- * Taken from https://stackoverflow.com/a/50767210/1923095
- * 
- * @param   {ArrayBuffer} buffer     Buffer that is being converted to UTF8
- * @returns {string}                 String with hex.
+ArrayBufferToHex accepts an array buffer and returns a string of hex.
+Taken from https://stackoverflow.com/a/50767210/1923095
+@param   {ArrayBuffer} buffer     Buffer that is being converted to UTF8
+@returns {string}                 String with hex.
  */
 async function ArrayBufferToHex(buffer) {
 	return [...new Uint8Array(buffer)].map(x => x.toString(16).padStart(2, "0")).join('').toUpperCase();
@@ -491,22 +498,21 @@ async function ArrayBufferToHex(buffer) {
 };
 
 /**
- * isEmpty is a helper function to determine if thing is empty. 
- * 
- * Objects are empty if they have no keys. (Returns len === 0 of object keys.)
- *
- * Functions are considered always not empty. 
- * 
- * NaN returns true.  (NaN === NaN is always false, as NaN is never equal to
- * anything. NaN is the only JavaScript value unequal to itself.)
- *
- * Don't use on HTMl elements. For HTML elements, use the !== equality check
- * (element !== null).
- *
- * Cannot use CryptoKey with this function since (len === 0) always. 
- *
- * @param   {any}     thing    Thing you wish was empty.  
- * @returns {boolean}          Boolean.  
+isEmpty is a helper function to determine if thing is empty. 
+
+Objects are empty if they have no keys. (Returns len === 0 of object keys.)
+
+Functions are considered always not empty. 
+
+NaN returns true.  (NaN === NaN is always false, as NaN is never equal to
+anything. NaN is the only JavaScript value unequal to itself.)
+
+Don't use on HTMl elements. For HTML elements, use the !== equality check
+(element !== null).
+
+Cannot use CryptoKey with this function since (len === 0) always. 
+@param   {any}     thing    Thing you wish was empty.  
+@returns {boolean}          Boolean.  
  */
 function isEmpty(thing) {
 	if (typeof thing === 'function') {
@@ -527,15 +533,14 @@ function isEmpty(thing) {
 };
 
 /**
- * Helper function to determine boolean.  
- *
- * Javascript, instead of considering everything false except a few key words,
- * decided everything is true instead of a few key words.  Why?  Because
- * Javascript.  This function inverts that assumption, so that everything can be
- * considered false unless true. 
- *
- * @param   {any}      bool   Thing that you wish was a boolean.  
- * @returns {boolean}         An actual boolean.  
+Helper function to determine boolean.  
+
+Javascript, instead of considering everything false except a few key words,
+decided everything is true instead of a few key words.  Why?  Because
+Javascript.  This function inverts that assumption, so that everything can be
+considered false unless true. 
+@param   {any}      bool   Thing that you wish was a boolean.  
+@returns {boolean}         An actual boolean.  
  */
 function isBool(bool) {
 	if (

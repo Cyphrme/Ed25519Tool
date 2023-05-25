@@ -18,7 +18,6 @@
 			font-size: 18px;
 		}
 
-
 		body {
 			margin-left: 20px;
 		}
@@ -80,12 +79,6 @@
 			</select>
 		</div>
 
-
-		<label for="InputMsg">✉️ Message</label>
-		<div>
-			<textarea name="InputMsg" id="InputMsg" cols="64" rows="4"></textarea>
-		</div>
-
 		<label for="EdType">Msg Encoding</label>
 		<div>
 			<select title="Encoding of input message" name="MsgEnc" id="MsgEnc">
@@ -93,12 +86,12 @@
 				<option value="Hex">Hex</option>
 				<option value="B64">base64</option>
 			</select>
-
 		</div>
 
-
-
-
+		<label for="InputMsg">✉️ Message</label>
+		<div>
+			<textarea name="InputMsg" id="InputMsg" cols="64" rows="4"></textarea>
+		</div>
 
 
 		<label for="KeyEnc">Key Encoding</label>
@@ -118,7 +111,7 @@
 		<label for="PublicKey">🔑 Public Key </label>
 		<div>
 			<input type="text" id="PublicKey" size="64">
-			<button class="item-4" title="Generates public key from given seed." id="GenKeyPairBtn">⚙️ Public Key from Seed</button>
+			<button class="item-4" title="Generates public key from given seed." id="GenKeyFromSeedBtn">⚙️ Public Key from Seed</button>
 		</div>
 
 		<label for="Signature">✍️ Signature</label>
@@ -144,6 +137,8 @@
 		<label>Seed || Public</label>
 		<div><span id="Kyp"></span>
 		</div>
+		
+				<input type="checkbox" id="verify" checked hidden>
 		<div id="share1" class="shareElement"><button id="shareURLBtn" title="Generate a share URL with current values.">🔗 Share</button></div>
 		<div id="share2" class="shareElement"><span id="shareURL"></span></div>
 
@@ -163,8 +158,7 @@
 			<li><a href="https://cyphr.me/coze_verifier_simple/coze.html">Simple Coze Verifier</a></li>
 			<li>Convert <a href="https://convert.zamicol.com/#?inAlph=Hex&outAlph=base64">Hex to base64</a> or <a href="https://convert.zamicol.com/?inAlph=base64&outAlph=Hex">base64 to Hex </a></li>
 			<li><a href="https://tweetnacl.js.org/#/sign">Javascript TweetNaCL tool </a></li>
-			<li><a href="https://paulmillr.com/noble">Noble Ed25519 tool (at the bottom of that page)</a> </li>
-			<li><a href="https://github.com/paulmillr/noble-ed25519">Implemented with the noble/ed25519 library.</a></li>
+			<li><a href="https://paulmillr.com/noble">Noble Ed25519 tool.</a> <a href="https://github.com/paulmillr/noble-ed25519">Implemented with noble/ed25519.</a></li>
 			<li><a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys"> Mozilla blog, "How do Ed25519 keys work?"</a></li>
 			<li><a href="https://cyphr.me">Sponsored by Cyphr.me</a></li>
 
