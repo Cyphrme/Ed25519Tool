@@ -58,13 +58,11 @@ const EmptyMSPPS = {
 	Sigb: "",
 }
 
-
-var KeyEncoding = "Hex"; // The current key encoding.  May be changed by "KeyEnc".
-var AppMsgEmpty = "---";
+const AppMsgEmpty = "---";
 
 // GUI Element variables
 var InputMsg;
-var MsgEncoding;
+var MsgEnc;
 var AlgType;
 var KeyEnc;
 var Seed;
@@ -82,31 +80,31 @@ const FormOptions = {
 		"id": "InputMsg",
 	}, {
 		"name": "msg_encoding",
-		"id": "MsgEncoding",
+		"id": "MsgEnc",
 	}, {
 		"name": "msg_type",
 		"id": "AlgType",
 	}, {
 		"name": "key_encoding",
-		"id": "KeyOpts"
+		"id": "KeyEnc",
 	}, {
 		"name": "seed",
-		"id": "Seed"
+		"id": "Seed",
 	}, {
 		"name": "key",
-		"id": "PublicKey"
+		"id": "PublicKey",
 	}, {
 		"name": "sig",
-		"id": "Signature"
+		"id": "Signature",
 	}, ]
 };
 
 
 // DOM load
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 	// If not wanting the URLFormJS dependency, encapsulate in a try/catch.
 	try {
-		URLForm.Populate(URLForm.Init(FormOptions));
+		await URLForm.Populate(URLForm.Init(FormOptions));
 	} catch (e) {
 		console.info("Unable to start share button/share link (URLFormJS).  If this was suppose to work, see the docs on cloning `URLFormJS`.");
 		document.querySelectorAll('.shareElement').forEach(function(e) {
@@ -115,7 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	InputMsg = document.getElementById('InputMsg');
-	MsgEncoding = document.getElementById('MsgEncoding');
+	MsgEnc = document.getElementById('MsgEnc');
+	
 	AlgType = document.getElementById('AlgType');
 	KeyEnc = document.getElementById('KeyEnc');
 	Seed = document.getElementById('Seed');
@@ -124,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	Kyp = document.getElementById('Kyp');
 	AppMessage = document.getElementById('AppMessage');
 	AppMessage.textContent  = AppMsgEmpty;
+
 
 	// Set event listeners for buttons.
 	document.getElementById('GenRandKeyPairBtn').addEventListener('click', GenRadomGUI);
@@ -145,7 +145,7 @@ async function GetMSPPS() {
 	let MSPPS = {};
 	let Msg = InputMsg.value;
 
-	switch (MsgEncoding.value) {
+	switch (MsgEnc.value) {
 		case "B64":
 			MSPPS.Msg = new Uint8Array(await HexToUI8(B64ToHex(Msg)));
 			break;
@@ -172,19 +172,22 @@ async function GetMSPPS() {
 	let Puk = PublicKey.value;
 	let Sig = Signature.value;
 
-	if (KeyEncoding === "Hex") {
+	if (KeyEnc.value === "Hex") {
 		MSPPS.SedHex = Sed;
 		MSPPS.PukHex = Puk;
 		MSPPS.KypHex = Sed + Puk;
 		MSPPS.SigHex = Sig;
 	}
+	console.log("Bob", KeyEnc.value)
 
-	if (KeyEncoding === "B64") {
+	if (KeyEnc.value === "B64") {
 		MSPPS.SedHex = B64ToHex(Sed);
 		MSPPS.PukHex = B64ToHex(Puk);
 		MSPPS.KypHex = B64ToHex(Sed) + B64ToHex(Puk);
 		MSPPS.SigHex = B64ToHex(Sig);
 	}
+
+	console.log("Bob2", MSPPS)
 
 	if (!isEmpty(MSPPS.SedHex)) {
 		if (MSPPS.SedHex.length == 128) {
@@ -210,17 +213,6 @@ async function GetMSPPS() {
 	return MSPPS;
 }
 
-// Change key values, seed, public key, sig, and KeyPair, to Hex or B64 encoding
-// depending on Key Encoding.
-async function ChangeKeyEncGui() {
-	console.log("SetKeyEncGui");
-	let MSPPS = await GetMSPPS();
-
-	console.log(MSPPS);
-	KeyEncoding = KeyEnc.value;
-	SetGuiIn(MSPPS);
-}
-
 
 /**
  * SetMSPPSFromHex sets the byte and base64 values from the Hex values.
@@ -241,6 +233,13 @@ async function SetMSPPSFromHex(MSPPS) {
 	MSPPS.Kypb = await HexToUI8(MSPPS.KypHex);
 }
 
+// Change key values, seed, public key, sig, and KeyPair, to Hex or B64 encoding
+// depending on Key Encoding.
+async function ChangeKeyEncGui() {
+	let MSPPS = await GetMSPPS();
+	SetGuiIn(MSPPS);
+}
+
 /**
  * SetGuiIn sets the input GUI.
  * 
@@ -248,14 +247,14 @@ async function SetMSPPSFromHex(MSPPS) {
  */
 async function SetGuiIn(MSPPS) {
 	console.log(MSPPS);
-	if (KeyEncoding === "Hex") {
+	if (KeyEnc.value === "Hex") {
 		Seed.value = MSPPS.SedHex;
 		PublicKey.value = MSPPS.PukHex;
 		Signature.value = MSPPS.SigHex;
 		Kyp.textContent = MSPPS.KypHex;
 	}
 
-	if (KeyEncoding === "B64") {
+	if (KeyEnc.value === "B64") {
 		Seed.value = MSPPS.Sed64;
 		PublicKey.value = MSPPS.Puk64;
 		Signature.value = MSPPS.Sig64;
