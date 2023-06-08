@@ -6,7 +6,8 @@ Live demo: https://cyphr.me/ed25519_tool/ed.html
 
 Also, [Github hosted copy](https://cyphrme.github.io/ed25519_tool/ed.html)
 
-All functions are ran locally.  Nothing is sent or computed by a remote server (other than downloading the page itself).
+All functions are ran locally.  Nothing is sent or computed by a remote server
+(other than downloading the page itself).
 
 
 ## This tool may be used offline and does not need an Internet connection
@@ -79,8 +80,10 @@ applications. See also `join.js`.
 - https://ianix.com/pub/ed25519-deployment.html
 
 
-# Attribution
-Implemented using noble/ed25519: https://github.com/paulmillr/noble-ed25519
+# License, Attribution, and Trademark Notice
+ed25519_tool is released under the 3-Clause BSD License.
+
+Implemented using [noble/ed25519](https://github.com/paulmillr/noble-ed25519).
 
 "Cyphr.me" is a trademark of Cypherpunk, LLC. The Cyphr.me logo is all rights
 reserved Cypherpunk, LLC and may not be used without permission.
