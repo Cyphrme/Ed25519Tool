@@ -20,7 +20,7 @@ Pukb:     Public Key
 Kypb:     (Key Pair) Seed || Public Key.  
 Sigb:     Signature.
 
-@typedef  {{}}       MSPPS
+@typedef  {object}       MSPPS
 @property {Uint8}    Msg
 
 @property {Hex}      SedHex
@@ -28,10 +28,10 @@ Sigb:     Signature.
 @property {Hex}      KypHex
 @property {Hex}      SigHex
 
-@property {b64}      Sed64
-@property {b64}      Puk64
-@property {b64}      Kyp64
-@property {b64}      Sig64
+@property {B64}      Sed64
+@property {B64}      Puk64
+@property {B64}      Kyp64
+@property {B64}      Sig64
 
 @property {Uint8}    Sedb
 @property {Uint8}    Pukb
@@ -497,40 +497,55 @@ async function ArrayBufferToHex(buffer) {
 	// let hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 };
 
+///////////////////////////////////
+// Helpers - Taken from Cyphr.me
+///////////////////////////////////
+
 /**
 isEmpty is a helper function to determine if thing is empty. 
 
-Objects are empty if they have no keys. (Returns len === 0 of object keys.)
-
 Functions are considered always not empty. 
+
+Arrays: Only if an array has no elements it is empty.  isEmpty does not check
+element contents.  (For item contents, do: `isEmpty(array[0])`)
+
+Objects are empty if they have no keys. (Returns len === 0 of object keys.)
 
 NaN returns true.  (NaN === NaN is always false, as NaN is never equal to
 anything. NaN is the only JavaScript value unequal to itself.)
 
 Don't use on HTMl elements. For HTML elements, use the !== equality check
-(element !== null).
+(element !== null). TODO fix this
 
 Cannot use CryptoKey with this function since (len === 0) always. 
+
 @param   {any}     thing    Thing you wish was empty.  
 @returns {boolean}          Boolean.  
- */
+*/
 function isEmpty(thing) {
 	if (typeof thing === 'function') {
-		return false;
+		return false
+	}
+
+	if (Array.isArray(thing)) {
+		if(thing.length == 0){
+			return true
+		}
 	}
 
 	if (thing === Object(thing)) {
 		if (Object.keys(thing).length === 0) {
-			return true;
+			return true
 		}
-		return false;
+		return false
 	}
 
 	if (!isBool(thing)) {
-		return true;
+		return true
 	}
 	return false
-};
+}
+
 
 /**
 Helper function to determine boolean.  
@@ -540,8 +555,8 @@ decided everything is true instead of a few key words.  Why?  Because
 Javascript.  This function inverts that assumption, so that everything can be
 considered false unless true. 
 @param   {any}      bool   Thing that you wish was a boolean.  
-@returns {boolean}         An actual boolean.  
- */
+@returns {boolean}         An actual boolean.
+*/
 function isBool(bool) {
 	if (
 		bool === false ||
@@ -557,7 +572,7 @@ function isBool(bool) {
 		Number.isNaN(bool) ||
 		bool === Object(bool) // isObject
 	) {
-		return false;
+		return false
 	}
-	return true;
-};
+	return true
+}
