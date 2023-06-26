@@ -1,10 +1,9 @@
-# Ed25519 Online Tool
+# Ed25519Tool 
+Ed25519 signing and verification online tool.
 
-Sign or Verify Messages using Ed25519
+Live demo: https://cyphr.me/Ed25519Tool/ed.html
 
-Live demo: https://cyphr.me/ed25519_tool/ed.html
-
-Also, [Github hosted copy](https://cyphrme.github.io/ed25519_tool/ed.html)
+Also, [Github hosted copy](https://cyphrme.github.io/Ed25519Tool/ed.html)
 
 All functions are ran locally.  Nothing is sent or computed by a remote server
 (other than downloading the page itself).
@@ -16,7 +15,7 @@ All functions are ran locally.  Nothing is sent or computed by a remote server
 
 ```
 (
-git clone https://github.com/Cyphrme/ed25519_tool.git ed25519_tool
+git clone https://github.com/Cyphrme/Ed25519Tool.git ed25519_tool
 cd ed25519_tool 
 git clone git@github.com:Cyphrme/URLFormJS.git urlformjs
 git submodule add git@github.com:Cyphrme/URLFormJS.git urlformjs
@@ -26,7 +25,7 @@ git submodule add git@github.com:Cyphrme/URLFormJS.git urlformjs
 
 
 
-Alternatively, download from [the release page](https://github.com/Cyphrme/ed25519_tool/releases).  Integrity checking may be done by comparing the digests on the release page, or use `git` which will integrity check
+Alternatively, download from [the release page](https://github.com/Cyphrme/Ed25519Tool/releases).  Integrity checking may be done by comparing the digests on the release page, or use `git` which will integrity check
 
 Then navigate to `file://path_to_file/ed.html`.
 
@@ -88,7 +87,7 @@ applications. See also `join.js`.
 
 
 # License, Attribution, and Trademark Notice
-ed25519_tool is released under the 3-Clause BSD License.
+Ed25519Tool is released under the 3-Clause BSD License.
 
 Implemented using [noble/ed25519](https://github.com/paulmillr/noble-ed25519).
 
