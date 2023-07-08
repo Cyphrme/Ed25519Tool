@@ -1,17 +1,16 @@
 # Ed25519Tool 
 Ed25519 signing and verification online tool.
 
-Live demo: https://cyphr.me/Ed25519Tool/ed.html
+## [Live tool](https://cyphr.me/ed25519_tool/ed.html) 
 
 Also, [Github hosted copy](https://cyphrme.github.io/Ed25519Tool/ed.html)
 
 All functions are ran locally.  Nothing is sent or computed by a remote server
 (other than downloading the page itself).
 
-
 ## This tool may be used offline and does not need an Internet connection
 
-`git clone` this project to a local directory.  
+For local use, `git clone` this project:
 
 ```
 (
@@ -22,10 +21,10 @@ git submodule add git@github.com:Cyphrme/URLFormJS.git urlformjs
 )
 ```
 
-
-
-
-Alternatively, download from [the release page](https://github.com/Cyphrme/Ed25519Tool/releases).  Integrity checking may be done by comparing the digests on the release page, or use `git` which will integrity check
+Alternatively, download from [the release
+page](https://github.com/Cyphrme/Ed25519Tool/releases).  
+Integrity checking may be done by comparing the digests on the release page, or
+use `git` which will integrity check
 
 Then navigate to `file://path_to_file/ed.html`.
 
@@ -96,5 +95,3 @@ reserved Cypherpunk, LLC and may not be used without permission.
 
 # Keywords
 Ed25519 test page, Ed25519 online tool.  
-
-
