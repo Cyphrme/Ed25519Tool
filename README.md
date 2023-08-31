@@ -84,6 +84,11 @@ applications. See also `join.js`.
 - https://en.wikipedia.org/wiki/EdDSA
 - https://ianix.com/pub/ed25519-deployment.html
 
+# Why
+Previously, the top result on Google was an [evil tool](https://i.imgur.com/jF9sQpN.gif) that stole private keys. 😱  
+
+This tool replaced the evil tool in Google results.  Special thank you to /r/ethfinance for helping report the evil site and getting it removed.  
+
 
 # License, Attribution, and Trademark Notice
 Ed25519Tool is released under the 3-Clause BSD License.
